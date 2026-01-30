@@ -13,6 +13,11 @@ use Illuminate\View\View;
 
 class QuizController extends Controller
 {
+    public function home(): View
+    {
+        return view('home');
+    }
+
     public function showTodayQuiz(Request $request): View
     {
         $now = Carbon::now();
