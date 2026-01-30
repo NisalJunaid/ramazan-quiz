@@ -62,3 +62,12 @@
         @endif
     </div>
 @endsection
+
+@push('live-reload')
+    @if ($quizDay)
+        <script>
+            window.liveReloadChannels = window.liveReloadChannels || [];
+            window.liveReloadChannels.push({ name: 'leaderboard.{{ $quizDay->id }}', event: 'LeaderboardChanged' });
+        </script>
+    @endif
+@endpush

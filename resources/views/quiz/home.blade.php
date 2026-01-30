@@ -32,9 +32,18 @@
         <section class="grid gap-6 lg:grid-cols-2">
             <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900">Today's Quiz Status</h2>
-                <p class="mt-2 text-sm text-gray-600">
-                    The quiz opens daily and is available for a limited time window. Sign in early so you can begin the attempt once it opens.
-                </p>
+                @if ($quizDay)
+                    <p class="mt-2 text-sm text-gray-600">
+                        {{ $quizDay->title }} · {{ $quizDay->quiz_date }}
+                    </p>
+                    <p class="mt-2 text-sm {{ $isActive ? 'text-emerald-700' : 'text-gray-600' }}">
+                        {{ $isActive ? 'Quiz is open now.' : 'Quiz is scheduled for today.' }}
+                    </p>
+                @else
+                    <p class="mt-2 text-sm text-gray-600">
+                        No published quiz scheduled for today. Please check back later.
+                    </p>
+                @endif
                 <div class="mt-4 flex flex-wrap gap-3">
                     @auth
                         <a class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('quiz.today') }}">

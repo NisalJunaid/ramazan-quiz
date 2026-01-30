@@ -3,15 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class QuizDay extends Model
 {
     protected $guarded = ['id'];
 
-    public function questions(): HasMany
+    public function quizRange(): BelongsTo
     {
-        return $this->hasMany(Question::class);
+        return $this->belongsTo(QuizRange::class);
+    }
+
+    public function question(): HasOne
+    {
+        return $this->hasOne(Question::class);
     }
 
     public function attempts(): HasMany

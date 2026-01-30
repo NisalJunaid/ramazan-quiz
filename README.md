@@ -7,6 +7,23 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Ramazan Daily Quiz Portal (Local Setup)
+
+1. Configure `.env` with the Socketi-compatible Pusher settings (see `.env.example`).
+2. Run migrations:
+   ```bash
+   php artisan migrate
+   ```
+3. Install frontend dependencies and start Vite:
+   ```bash
+   npm install
+   npm run dev
+   ```
+4. Start Socketi for broadcasting:
+   ```bash
+   npx socketi start --port 6001
+   ```
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

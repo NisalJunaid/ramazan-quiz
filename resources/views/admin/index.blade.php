@@ -5,13 +5,13 @@
         <header>
             <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500">Admin Panel</p>
             <h1 class="mt-2 text-2xl font-semibold text-emerald-700">Quiz Management Dashboard</h1>
-            <p class="mt-2 text-sm text-gray-600">Create quiz days, manage questions, and publish daily challenges.</p>
+            <p class="mt-2 text-sm text-gray-600">Create quiz ranges, manage daily questions, and publish quizzes.</p>
         </header>
 
         <section class="grid gap-4 sm:grid-cols-2">
             <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900">Manage Quizzes</h2>
-                <p class="mt-2 text-sm text-gray-600">Create new quiz days, add questions, and set publication status.</p>
+                <p class="mt-2 text-sm text-gray-600">Create quiz ranges, edit daily questions, and set publication status.</p>
                 <a class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('admin.quizzes.index') }}">
                     Go to Quiz Manager
                     <span aria-hidden="true">→</span>
