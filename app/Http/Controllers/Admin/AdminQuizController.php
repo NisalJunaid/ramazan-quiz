@@ -35,10 +35,12 @@ class AdminQuizController extends Controller
             'duration_seconds' => ['required', 'integer', 'min:1'],
             'is_published' => ['nullable', 'boolean'],
             'is_visible' => ['nullable', 'boolean'],
+            'leaderboard_is_public' => ['nullable', 'boolean'],
         ]);
 
         $validated['is_published'] = $request->boolean('is_published');
         $validated['is_visible'] = $request->boolean('is_visible', true);
+        $validated['leaderboard_is_public'] = $request->boolean('leaderboard_is_public', true);
 
         $startDate = Carbon::parse($validated['start_date'])->startOfDay();
         $endDate = Carbon::parse($validated['end_date'])->startOfDay();
@@ -55,6 +57,7 @@ class AdminQuizController extends Controller
                 'duration_seconds' => $validated['duration_seconds'],
                 'is_published' => $validated['is_published'],
                 'is_visible' => $validated['is_visible'],
+                'leaderboard_is_public' => $validated['leaderboard_is_public'],
             ]);
 
             $currentDate = $startDate->copy();
@@ -94,10 +97,12 @@ class AdminQuizController extends Controller
             'duration_seconds' => ['required', 'integer', 'min:1'],
             'is_published' => ['nullable', 'boolean'],
             'is_visible' => ['nullable', 'boolean'],
+            'leaderboard_is_public' => ['nullable', 'boolean'],
         ]);
 
         $validated['is_published'] = $request->boolean('is_published');
         $validated['is_visible'] = $request->boolean('is_visible', true);
+        $validated['leaderboard_is_public'] = $request->boolean('leaderboard_is_public');
 
         DB::transaction(function () use ($quizRange, $validated) {
             $quizRange->update([
@@ -105,6 +110,7 @@ class AdminQuizController extends Controller
                 'duration_seconds' => $validated['duration_seconds'],
                 'is_published' => $validated['is_published'],
                 'is_visible' => $validated['is_visible'],
+                'leaderboard_is_public' => $validated['leaderboard_is_public'],
             ]);
 
             $quizRange->quizDays()->update([

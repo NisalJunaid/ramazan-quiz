@@ -7,7 +7,9 @@
                 <h1 class="text-2xl font-semibold text-emerald-700">Today's Quiz</h1>
                 <p class="mt-1 text-sm text-gray-600">Complete one attempt before the window closes.</p>
             </div>
-            <a class="text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('leaderboard') }}">View leaderboard</a>
+            @if ($canViewLeaderboard)
+                <a class="text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('leaderboard') }}">View leaderboard</a>
+            @endif
         </header>
 
         @if (session('status'))

@@ -12,7 +12,9 @@
             <nav>
                 <ul>
                     <li><a href="{{ route('quiz.today') }}">Today's Quiz</a></li>
-                    <li><a href="{{ route('leaderboard') }}">Leaderboard</a></li>
+                    @if ($canViewLeaderboard)
+                        <li><a href="{{ route('leaderboard') }}">Leaderboard</a></li>
+                    @endif
                 </ul>
             </nav>
         @else

@@ -21,9 +21,11 @@
                     </x-nav-link>
 
                     <!-- Leaderboard -->
-                    <x-nav-link :href="route('leaderboard')" :active="request()->routeIs('leaderboard')">
-                        {{ __('Leaderboard') }}
-                    </x-nav-link>
+                    @if ($canViewLeaderboard)
+                        <x-nav-link :href="route('leaderboard')" :active="request()->routeIs('leaderboard')">
+                            {{ __('Leaderboard') }}
+                        </x-nav-link>
+                    @endif
 
                     <!-- Admin (ONLY if admin) -->
                     @auth
@@ -114,9 +116,11 @@
                 {{ __('Home') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('leaderboard')" :active="request()->routeIs('leaderboard')">
-                {{ __('Leaderboard') }}
-            </x-responsive-nav-link>
+            @if ($canViewLeaderboard)
+                <x-responsive-nav-link :href="route('leaderboard')" :active="request()->routeIs('leaderboard')">
+                    {{ __('Leaderboard') }}
+                </x-responsive-nav-link>
+            @endif
 
             @auth
                 @if(Auth::user()->role === 'admin')
