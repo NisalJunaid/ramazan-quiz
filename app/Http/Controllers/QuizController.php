@@ -15,7 +15,7 @@ class QuizController extends Controller
 {
     public function home(): View
     {
-        return view('home');
+        return view('quiz.home');
     }
 
     public function showTodayQuiz(Request $request): View
