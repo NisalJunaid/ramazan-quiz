@@ -57,6 +57,10 @@
                         <input class="h-4 w-4 rounded border-gray-300 text-emerald-600" type="checkbox" id="is_visible" name="is_visible" value="1" {{ old('is_visible', true) ? 'checked' : '' }}>
                         <label class="text-sm text-gray-700" for="is_visible">Visible</label>
                     </div>
+                    <div class="flex items-center gap-2 pt-6">
+                        <input class="h-4 w-4 rounded border-gray-300 text-emerald-600" type="checkbox" id="leaderboard_is_public" name="leaderboard_is_public" value="1" {{ old('leaderboard_is_public', true) ? 'checked' : '' }}>
+                        <label class="text-sm text-gray-700" for="leaderboard_is_public">Show leaderboard to users</label>
+                    </div>
                     <div class="sm:col-span-2">
                         <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">Create Quiz Range</button>
                     </div>
@@ -90,6 +94,7 @@
                                 <th class="px-4 py-3">Duration</th>
                                 <th class="px-4 py-3">Published</th>
                                 <th class="px-4 py-3">Visible</th>
+                                <th class="px-4 py-3">Leaderboard</th>
                                 <th class="px-4 py-3">Manage</th>
                                 <th class="px-4 py-3">Update</th>
                             </tr>
@@ -105,6 +110,7 @@
                                     <td class="px-4 py-3 text-gray-600">{{ $quizRange->duration_seconds }} sec</td>
                                     <td class="px-4 py-3 text-gray-700">{{ $quizRange->is_published ? 'Yes' : 'No' }}</td>
                                     <td class="px-4 py-3 text-gray-700">{{ $quizRange->is_visible ? 'Yes' : 'No' }}</td>
+                                    <td class="px-4 py-3 text-gray-700">{{ $quizRange->leaderboard_is_public ? 'Public' : 'Admin only' }}</td>
                                     <td class="px-4 py-3">
                                         <a class="text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('admin.quizzes.days', $quizRange) }}">
                                             Manage Days →
@@ -158,6 +164,17 @@
                                                     {{ $quizRange->is_visible ? 'checked' : '' }}
                                                 >
                                                 <label class="text-xs text-gray-700" for="is_visible_{{ $quizRange->id }}">Visible</label>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <input
+                                                    class="h-4 w-4 rounded border-gray-300 text-emerald-600"
+                                                    type="checkbox"
+                                                    id="leaderboard_is_public_{{ $quizRange->id }}"
+                                                    name="leaderboard_is_public"
+                                                    value="1"
+                                                    {{ $quizRange->leaderboard_is_public ? 'checked' : '' }}
+                                                >
+                                                <label class="text-xs text-gray-700" for="leaderboard_is_public_{{ $quizRange->id }}">Show leaderboard to users</label>
                                             </div>
                                             <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700" type="submit">
                                                 Update

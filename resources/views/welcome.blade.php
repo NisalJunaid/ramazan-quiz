@@ -13,9 +13,11 @@
                     <a class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" href="{{ route('home') }}">
                         Go to Home
                     </a>
-                    <a class="inline-flex items-center justify-center rounded-full border border-emerald-600 px-5 py-2 text-sm font-semibold text-emerald-600 hover:bg-emerald-50" href="{{ route('leaderboard') }}">
-                        View Leaderboard
-                    </a>
+                    @if ($canViewLeaderboard)
+                        <a class="inline-flex items-center justify-center rounded-full border border-emerald-600 px-5 py-2 text-sm font-semibold text-emerald-600 hover:bg-emerald-50" href="{{ route('leaderboard') }}">
+                            View Leaderboard
+                        </a>
+                    @endif
                 @else
                     <a class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" href="{{ route('login') }}">
                         Log In
