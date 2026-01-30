@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('attempt_id')->constrained('attempts')->cascadeOnDelete();
             $table->foreignId('question_id')->constrained('questions');
-            $table->foreignId('choice_id')->constrained('choices');
+            $table->foreignId('choice_id')->nullable()->constrained('choices');
             $table->boolean('is_correct');
             $table->integer('points_awarded');
 
