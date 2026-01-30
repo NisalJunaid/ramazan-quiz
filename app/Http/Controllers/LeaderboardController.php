@@ -36,7 +36,7 @@ class LeaderboardController extends Controller
                 ->get();
         }
 
-        return view('leaderboard', [
+        return view('leaderboard.today', [
             'quizDay' => $quizDay,
             'attempts' => $attempts,
         ]);
