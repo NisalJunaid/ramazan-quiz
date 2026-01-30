@@ -34,9 +34,23 @@
             </div>
         @endif
 
+        @php
+            $choices = $quizDay->question?->choices?->sortBy('order_index')->values() ?? collect();
+            $correctIndex = null;
+
+            foreach ($choices as $index => $choice) {
+                if ($choice->is_correct) {
+                    $correctIndex = $index;
+                    break;
+                }
+            }
+
+            $selectedCorrect = old('correct_answer', $correctIndex);
+        @endphp
+
         <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Question</h2>
-            <form class="mt-4 grid gap-4" method="POST" action="{{ route('admin.questions.update', $quizDay) }}">
+            <h2 class="text-lg font-semibold text-gray-900">Question & Answers</h2>
+            <form class="mt-4 grid gap-6" method="POST" action="{{ route('admin.questions.save', $quizDay) }}">
                 @csrf
                 @method('PUT')
                 <div>
@@ -53,63 +67,29 @@
                         <input class="mt-1 w-full rounded-xl border-gray-300" type="number" id="order_index" name="order_index" min="1" value="{{ old('order_index', $quizDay->question?->order_index ?? 1) }}" {{ $hasSubmittedAttempts ? 'disabled' : '' }} required>
                     </div>
                 </div>
-                <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60" type="submit" {{ $hasSubmittedAttempts ? 'disabled' : '' }}>
-                    Update Question
-                </button>
-            </form>
-        </section>
 
-        <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Choices</h2>
-            <p class="mt-1 text-sm text-gray-600">Mark exactly one answer as correct.</p>
-
-            <div class="mt-4 space-y-4">
-                @forelse ($quizDay->question?->choices ?? [] as $choice)
-                    <form class="grid gap-4 rounded-2xl border border-gray-200 bg-gray-50/40 p-4" method="POST" action="{{ route('admin.choices.update', $choice) }}">
-                        @csrf
-                        @method('PUT')
-                        <div>
-                            <label class="text-xs font-medium text-gray-700" for="choice_text_{{ $choice->id }}">Choice Text</label>
-                            <input class="mt-1 w-full rounded-xl border-gray-300" type="text" id="choice_text_{{ $choice->id }}" name="choice_text" value="{{ old('choice_text', $choice->choice_text) }}" {{ $hasSubmittedAttempts ? 'disabled' : '' }} required>
-                        </div>
-                        <div class="grid gap-4 sm:grid-cols-2">
-                            <div>
-                                <label class="text-xs font-medium text-gray-700" for="order_index_{{ $choice->id }}">Order Index</label>
-                                <input class="mt-1 w-full rounded-xl border-gray-300" type="number" id="order_index_{{ $choice->id }}" name="order_index" min="1" value="{{ old('order_index', $choice->order_index) }}" {{ $hasSubmittedAttempts ? 'disabled' : '' }} required>
-                            </div>
-                            <div class="flex items-center gap-2 pt-6">
-                                <input class="h-4 w-4 rounded border-gray-300 text-emerald-600" type="checkbox" id="is_correct_{{ $choice->id }}" name="is_correct" value="1" {{ $choice->is_correct ? 'checked' : '' }} {{ $hasSubmittedAttempts ? 'disabled' : '' }}>
-                                <label class="text-xs text-gray-700" for="is_correct_{{ $choice->id }}">Correct answer</label>
-                            </div>
-                        </div>
-                        <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-60" type="submit" {{ $hasSubmittedAttempts ? 'disabled' : '' }}>
-                            Update Choice
-                        </button>
-                    </form>
-                @empty
-                    <p class="text-sm text-gray-600">No choices yet. Add the first choice below.</p>
-                @endforelse
-            </div>
-
-            <form class="mt-6 grid gap-4 rounded-2xl border border-dashed border-gray-200 p-4" method="POST" action="{{ route('admin.choices.store') }}">
-                @csrf
-                <input type="hidden" name="question_id" value="{{ $quizDay->question?->id }}">
                 <div>
-                    <label class="text-xs font-medium text-gray-700" for="new_choice_text">Choice Text</label>
-                    <input class="mt-1 w-full rounded-xl border-gray-300" type="text" id="new_choice_text" name="choice_text" value="{{ old('choice_text') }}" {{ $hasSubmittedAttempts ? 'disabled' : '' }} required>
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <label class="text-xs font-medium text-gray-700" for="new_order_index">Order Index</label>
-                        <input class="mt-1 w-full rounded-xl border-gray-300" type="number" id="new_order_index" name="order_index" min="1" value="{{ old('order_index') }}" {{ $hasSubmittedAttempts ? 'disabled' : '' }} required>
+                    <h3 class="text-sm font-semibold text-gray-900">Answers</h3>
+                    <p class="mt-1 text-sm text-gray-600">Select exactly one correct answer.</p>
+                    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                        @for ($index = 0; $index < 4; $index++)
+                            @php
+                                $choice = $choices->get($index);
+                            @endphp
+                            <div class="rounded-2xl border border-gray-200 bg-gray-50/40 p-4">
+                                <label class="text-xs font-medium text-gray-700" for="answer_text_{{ $index }}">Answer {{ $index + 1 }}</label>
+                                <input class="mt-1 w-full rounded-xl border-gray-300" type="text" id="answer_text_{{ $index }}" name="answers[{{ $index }}][text]" value="{{ old("answers.$index.text", $choice?->choice_text) }}" {{ $hasSubmittedAttempts ? 'disabled' : '' }} required>
+                                <div class="mt-3 flex items-center gap-2">
+                                    <input class="h-4 w-4 rounded border-gray-300 text-emerald-600" type="radio" id="correct_answer_{{ $index }}" name="correct_answer" value="{{ $index }}" {{ (string) $selectedCorrect === (string) $index ? 'checked' : '' }} {{ $hasSubmittedAttempts ? 'disabled' : '' }} required>
+                                    <label class="text-xs text-gray-700" for="correct_answer_{{ $index }}">Correct answer</label>
+                                </div>
+                            </div>
+                        @endfor
                     </div>
-                    <div class="flex items-center gap-2 pt-6">
-                        <input class="h-4 w-4 rounded border-gray-300 text-emerald-600" type="checkbox" id="new_is_correct" name="is_correct" value="1" {{ old('is_correct') ? 'checked' : '' }} {{ $hasSubmittedAttempts ? 'disabled' : '' }}>
-                        <label class="text-xs text-gray-700" for="new_is_correct">Correct answer</label>
-                    </div>
                 </div>
-                <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-60" type="submit" {{ $hasSubmittedAttempts ? 'disabled' : '' }}>
-                    Add Choice
+
+                <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60" type="submit" {{ $hasSubmittedAttempts ? 'disabled' : '' }}>
+                    Save Question & Answers
                 </button>
             </form>
         </section>
