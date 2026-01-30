@@ -60,6 +60,92 @@
         </section>
 
         <section>
+            <h2>Add Question</h2>
+            <form method="POST" action="{{ route('admin.questions.store') }}">
+                @csrf
+                <div>
+                    <label for="question_quiz_day_id">Quiz Day</label>
+                    <select id="question_quiz_day_id" name="quiz_day_id" required>
+                        <option value="">Select quiz day</option>
+                        @foreach ($quizDays as $quizDay)
+                            <option value="{{ $quizDay->id }}" {{ old('quiz_day_id') == $quizDay->id ? 'selected' : '' }}>
+                                {{ $quizDay->quiz_date }} - {{ $quizDay->title }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="question_text">Question Text</label>
+                    <textarea id="question_text" name="question_text" rows="3" required>{{ old('question_text') }}</textarea>
+                </div>
+                <div>
+                    <label for="question_points">Points</label>
+                    <input
+                        type="number"
+                        id="question_points"
+                        name="points"
+                        min="1"
+                        value="{{ old('points', 1) }}"
+                        required
+                    >
+                </div>
+                <div>
+                    <label for="question_order_index">Order Index</label>
+                    <input
+                        type="number"
+                        id="question_order_index"
+                        name="order_index"
+                        min="1"
+                        value="{{ old('order_index') }}"
+                        required
+                    >
+                </div>
+                <button type="submit">Add Question</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Add Choice</h2>
+            <form method="POST" action="{{ route('admin.choices.store') }}">
+                @csrf
+                <div>
+                    <label for="choice_question_id">Question</label>
+                    <select id="choice_question_id" name="question_id" required>
+                        <option value="">Select question</option>
+                        @foreach ($questions as $question)
+                            <option value="{{ $question->id }}" {{ old('question_id') == $question->id ? 'selected' : '' }}>
+                                {{ $question->quizDay?->quiz_date }} - Q{{ $question->order_index }}:
+                                {{ \Illuminate\Support\Str::limit($question->question_text, 80) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="choice_text">Choice Text</label>
+                    <input type="text" id="choice_text" name="choice_text" value="{{ old('choice_text') }}" required>
+                </div>
+                <div>
+                    <label for="choice_order_index">Order Index</label>
+                    <input
+                        type="number"
+                        id="choice_order_index"
+                        name="order_index"
+                        min="1"
+                        value="{{ old('order_index') }}"
+                        required
+                    >
+                </div>
+                <div>
+                    <label>
+                        <input type="checkbox" name="is_correct" value="1" {{ old('is_correct') ? 'checked' : '' }}>
+                        Mark as correct
+                    </label>
+                </div>
+                <button type="submit">Add Choice</button>
+            </form>
+        </section>
+
+        <section>
             <h2>Existing Quiz Days</h2>
             @if ($quizDays->isEmpty())
                 <p>No quiz days created yet.</p>

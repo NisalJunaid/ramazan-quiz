@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\QuizDay;
+use App\Models\Question;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -16,8 +17,15 @@ class AdminQuizController extends Controller
             ->orderByDesc('quiz_date')
             ->get();
 
+        $questions = Question::query()
+            ->with('quizDay')
+            ->orderByDesc('quiz_day_id')
+            ->orderBy('order_index')
+            ->get();
+
         return view('admin.quizzes.index', [
             'quizDays' => $quizDays,
+            'questions' => $questions,
         ]);
     }
 
