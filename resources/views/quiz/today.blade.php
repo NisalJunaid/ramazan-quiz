@@ -21,13 +21,35 @@
                 No active quiz right now. Please check back later.
             </div>
         @else
+            @if ($activeQuizRanges->count() > 1)
+                <div class="rounded-2xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+                    <div class="flex flex-wrap items-center gap-3 text-sm text-gray-700">
+                        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">Active Quiz</span>
+                        <div class="flex items-center gap-2">
+                            <label class="sr-only" for="quiz-range-selector">Select quiz range</label>
+                            <select
+                                id="quiz-range-selector"
+                                class="rounded-full border-gray-300 pr-8 text-sm font-semibold text-gray-800 focus:border-emerald-500 focus:ring-emerald-500"
+                                onchange="window.location.href='{{ route('quiz.today') }}?quiz_range_id=' + this.value"
+                            >
+                                @foreach ($activeQuizRanges as $quizRange)
+                                    <option value="{{ $quizRange->id }}" {{ $selectedQuizRange?->id === $quizRange->id ? 'selected' : '' }}>
+                                        {{ $quizRange->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <section class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
                 <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">Quiz Progress</p>
                             <h2 class="mt-2 text-lg font-semibold text-gray-900">
-                                {{ $quizDay->quizRange?->title ?? "Ramazan Quiz" }}
+                                {{ $selectedQuizRange?->title ?? $quizDay->quizRange?->title ?? "Ramazan Quiz" }}
                             </h2>
                             <p class="mt-2 text-sm text-gray-600">
                                 @if ($currentDayNumber)
@@ -42,7 +64,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-5 flex flex-wrap items-center gap-3">
+                    <div class="mt-5 flex items-center gap-3 overflow-x-auto">
                         @forelse ($daysProgress as $day)
                             @php
                                 $statusClass = match ($day['status']) {
@@ -54,7 +76,7 @@
                                 };
                                 $ringClass = $day['is_today'] ? 'ring-2 ring-emerald-500 ring-offset-2' : '';
                             @endphp
-                            <div class="flex h-9 w-9 flex-none items-center justify-center rounded-full text-xs font-semibold {{ $statusClass }} {{ $ringClass }}">
+                            <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full text-xs font-semibold {{ $statusClass }} {{ $ringClass }}">
                                 {{ $day['label'] }}
                             </div>
                         @empty
@@ -364,7 +386,7 @@
                 class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-gray-900/70 opacity-0 backdrop-blur-sm transition-opacity duration-300"
                 data-quiz-expired-overlay
                 data-redirect-seconds="15"
-                data-redirect-url="{{ route('quiz.today') }}"
+                data-redirect-url="{{ route('quiz.today', ['quiz_range_id' => $quizDay->quiz_range_id]) }}"
                 aria-hidden="true"
                 role="dialog"
                 aria-modal="true"
