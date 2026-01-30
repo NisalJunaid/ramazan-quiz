@@ -41,14 +41,31 @@
                         </button>
                     </form>
                 @elseif ($attempt->status === 'in_progress' && $remainingSeconds !== null)
-                    <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                        Attempt in progress. Remaining time: <span class="font-semibold">{{ $remainingSeconds }} seconds</span>
+                    @php
+                        $formattedRemaining = gmdate('i:s', $remainingSeconds);
+                    @endphp
+                    <div
+                        class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-4"
+                        data-quiz-timer
+                        data-duration-seconds="{{ $quizDay->duration_seconds }}"
+                        data-remaining-seconds="{{ $remainingSeconds }}"
+                    >
+                        <div class="flex items-center justify-between text-sm font-semibold text-emerald-800">
+                            <span>Time remaining</span>
+                            <span data-quiz-timer-text class="tabular-nums">{{ $formattedRemaining }}</span>
+                        </div>
+                        <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-emerald-100">
+                            <div
+                                class="h-full w-full rounded-full bg-emerald-500 transition-[width] duration-500 ease-linear"
+                                data-quiz-timer-bar
+                            ></div>
+                        </div>
                     </div>
 
                     @if (! $question)
                         <p class="mt-4 text-sm text-gray-600">No questions available.</p>
                     @else
-                        <form class="mt-6 space-y-5" method="POST" action="{{ route('attempt.submit', $attempt) }}">
+                        <form id="quiz-attempt-form" class="mt-6 space-y-5" method="POST" action="{{ route('attempt.submit', $attempt) }}">
                             @csrf
                             <fieldset class="rounded-2xl border border-gray-200 bg-gray-50/40 p-5">
                                 <legend class="text-sm font-semibold text-gray-800">
@@ -73,6 +90,82 @@
                             </button>
                         </form>
                     @endif
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const timerContainer = document.querySelector('[data-quiz-timer]');
+                            if (!timerContainer) {
+                                return;
+                            }
+
+                            const timerText = timerContainer.querySelector('[data-quiz-timer-text]');
+                            const timerBar = timerContainer.querySelector('[data-quiz-timer-bar]');
+                            const totalSeconds = Number(timerContainer.dataset.durationSeconds || 0);
+                            const remainingFromServer = Number(timerContainer.dataset.remainingSeconds);
+                            let remainingSeconds = Number.isFinite(remainingFromServer) ? remainingFromServer : totalSeconds;
+                            const quizForm = document.querySelector('#quiz-attempt-form');
+
+                            if (!totalSeconds || !timerText || !timerBar) {
+                                return;
+                            }
+
+                            let hasSubmitted = false;
+
+                            if (quizForm) {
+                                quizForm.addEventListener('submit', () => {
+                                    hasSubmitted = true;
+                                    quizForm.dataset.submitted = 'true';
+                                });
+                            }
+
+                            const formatTime = (seconds) => {
+                                const minutes = Math.floor(seconds / 60);
+                                const remaining = seconds % 60;
+                                return `${String(minutes).padStart(2, '0')}:${String(remaining).padStart(2, '0')}`;
+                            };
+
+                            const updateDisplay = () => {
+                                const clampedSeconds = Math.max(remainingSeconds, 0);
+                                timerText.textContent = formatTime(clampedSeconds);
+                                const percent = Math.max((clampedSeconds / totalSeconds) * 100, 0);
+                                timerBar.style.width = `${percent}%`;
+                            };
+
+                            const disableInputs = () => {
+                                if (!quizForm) {
+                                    return;
+                                }
+                                quizForm.querySelectorAll('input, button').forEach((input) => {
+                                    input.disabled = true;
+                                });
+                            };
+
+                            updateDisplay();
+
+                            if (remainingSeconds <= 0) {
+                                disableInputs();
+                                if (quizForm && !hasSubmitted && quizForm.dataset.submitted !== 'true') {
+                                    hasSubmitted = true;
+                                    quizForm.submit();
+                                }
+                                return;
+                            }
+
+                            const intervalId = setInterval(() => {
+                                remainingSeconds -= 1;
+                                updateDisplay();
+
+                                if (remainingSeconds <= 0) {
+                                    clearInterval(intervalId);
+                                    disableInputs();
+
+                                    if (quizForm && !hasSubmitted && quizForm.dataset.submitted !== 'true') {
+                                        hasSubmitted = true;
+                                        quizForm.submit();
+                                    }
+                                }
+                            }, 1000);
+                        });
+                    </script>
                 @elseif ($attempt->status === 'submitted')
                     <div class="mt-6 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
                         Submitted successfully. Score: <span class="font-semibold">{{ $attempt->score }}</span>

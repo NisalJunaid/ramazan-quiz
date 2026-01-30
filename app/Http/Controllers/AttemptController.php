@@ -24,14 +24,6 @@ class AttemptController extends Controller
             return redirect('/quiz/today')->with('status', 'Attempt not in progress');
         }
 
-        $now = Carbon::now();
-        $expiresAt = Carbon::parse($attempt->expires_at);
-        if ($now->greaterThan($expiresAt)) {
-            $attempt->update(['status' => 'expired']);
-
-            return redirect('/quiz/today')->with('status', 'Attempt expired');
-        }
-
         $quizDay = QuizDay::query()
             ->with([
                 'question.choices' => function ($query) {
@@ -42,6 +34,15 @@ class AttemptController extends Controller
 
         if (! $quizDay) {
             return redirect('/quiz/today')->with('status', 'Quiz not available');
+        }
+
+        $now = Carbon::now();
+        $expiresAt = Carbon::parse($attempt->expires_at);
+        $allowedUntil = Carbon::parse($attempt->started_at)->addSeconds($quizDay->duration_seconds);
+        if ($now->greaterThan($expiresAt) || $now->greaterThan($allowedUntil)) {
+            $attempt->update(['status' => 'expired']);
+
+            return redirect('/quiz/today')->with('status', 'Attempt expired');
         }
 
         $question = $quizDay->question;
