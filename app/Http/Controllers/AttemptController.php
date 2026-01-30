@@ -25,7 +25,7 @@ class AttemptController extends Controller
 
         $now = Carbon::now();
         $expiresAt = Carbon::parse($attempt->expires_at);
-        if (! $now->lessThan($expiresAt)) {
+        if ($now->greaterThan($expiresAt)) {
             $attempt->update(['status' => 'expired']);
 
             return redirect('/quiz/today')->with('status', 'Attempt expired');
@@ -52,29 +52,21 @@ class AttemptController extends Controller
         DB::transaction(function () use ($attempt, $quizDay, $submittedAnswers, &$score, $now) {
             foreach ($quizDay->questions as $question) {
                 $choiceId = $submittedAnswers[$question->id] ?? null;
-                if (! $choiceId) {
-                    continue;
+                $choice = null;
+                if ($choiceId) {
+                    $choice = $question->choices->firstWhere('id', (int) $choiceId);
                 }
 
-                $choice = $question->choices->firstWhere('id', (int) $choiceId);
-                if (! $choice) {
-                    continue;
-                }
-
-                $isCorrect = (bool) $choice->is_correct;
+                $isCorrect = $choice ? (bool) $choice->is_correct : false;
                 $pointsAwarded = $isCorrect ? $question->points : 0;
 
-                Answer::updateOrCreate(
-                    [
-                        'attempt_id' => $attempt->id,
-                        'question_id' => $question->id,
-                    ],
-                    [
-                        'choice_id' => $choice->id,
-                        'is_correct' => $isCorrect,
-                        'points_awarded' => $pointsAwarded,
-                    ]
-                );
+                Answer::create([
+                    'attempt_id' => $attempt->id,
+                    'question_id' => $question->id,
+                    'choice_id' => $choice?->id,
+                    'is_correct' => $isCorrect,
+                    'points_awarded' => $pointsAwarded,
+                ]);
 
                 $score += $pointsAwarded;
             }
@@ -86,6 +78,8 @@ class AttemptController extends Controller
             ]);
         });
 
-        return redirect('/quiz/today')->with('status', 'Attempt submitted');
+        return redirect('/quiz/today')
+            ->with('status', 'Submitted')
+            ->with('score', $score);
     }
 }
