@@ -34,9 +34,11 @@ class AdminQuizController extends Controller
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'duration_seconds' => ['required', 'integer', 'min:1'],
             'is_published' => ['nullable', 'boolean'],
+            'is_visible' => ['nullable', 'boolean'],
         ]);
 
         $validated['is_published'] = $request->boolean('is_published');
+        $validated['is_visible'] = $request->boolean('is_visible', true);
 
         $startDate = Carbon::parse($validated['start_date'])->startOfDay();
         $endDate = Carbon::parse($validated['end_date'])->startOfDay();
@@ -52,6 +54,7 @@ class AdminQuizController extends Controller
                 'end_at' => $endDate->copy()->endOfDay(),
                 'duration_seconds' => $validated['duration_seconds'],
                 'is_published' => $validated['is_published'],
+                'is_visible' => $validated['is_visible'],
             ]);
 
             $currentDate = $startDate->copy();
@@ -90,15 +93,18 @@ class AdminQuizController extends Controller
             'title' => ['required', 'string'],
             'duration_seconds' => ['required', 'integer', 'min:1'],
             'is_published' => ['nullable', 'boolean'],
+            'is_visible' => ['nullable', 'boolean'],
         ]);
 
         $validated['is_published'] = $request->boolean('is_published');
+        $validated['is_visible'] = $request->boolean('is_visible', true);
 
         DB::transaction(function () use ($quizRange, $validated) {
             $quizRange->update([
                 'title' => $validated['title'],
                 'duration_seconds' => $validated['duration_seconds'],
                 'is_published' => $validated['is_published'],
+                'is_visible' => $validated['is_visible'],
             ]);
 
             $quizRange->quizDays()->update([

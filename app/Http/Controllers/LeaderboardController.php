@@ -16,7 +16,8 @@ class LeaderboardController extends Controller
         $quizDay = QuizDay::query()
             ->whereDate('quiz_date', $today)
             ->whereHas('quizRange', function ($query) {
-                $query->where('is_published', true);
+                $query->where('is_published', true)
+                    ->where('is_visible', true);
             })
             ->first();
 

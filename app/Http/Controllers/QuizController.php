@@ -22,7 +22,8 @@ class QuizController extends Controller
         $quizDay = QuizDay::query()
             ->whereDate('quiz_date', $today)
             ->whereHas('quizRange', function ($query) {
-                $query->where('is_published', true);
+                $query->where('is_published', true)
+                    ->where('is_visible', true);
             })
             ->first();
 
@@ -41,14 +42,32 @@ class QuizController extends Controller
         $now = Carbon::now();
         $today = Carbon::today();
 
-        $quizDay = QuizDay::query()
+        $activeQuizDays = QuizDay::query()
             ->whereDate('quiz_date', $today)
             ->where('start_at', '<=', $now)
             ->where('end_at', '>=', $now)
             ->whereHas('quizRange', function ($query) {
-                $query->where('is_published', true);
+                $query->where('is_published', true)
+                    ->where('is_visible', true);
             })
-            ->first();
+            ->with('quizRange')
+            ->get();
+
+        $activeQuizRanges = $activeQuizDays
+            ->map(fn (QuizDay $day) => $day->quizRange)
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        // Pick the selected range (query param wins) and scope everything to that range only.
+        $selectedQuizRangeId = $request->query('quiz_range_id');
+        $selectedQuizRange = $selectedQuizRangeId
+            ? $activeQuizRanges->firstWhere('id', (int) $selectedQuizRangeId)
+            : $activeQuizRanges->first();
+
+        $quizDay = $selectedQuizRange
+            ? $activeQuizDays->firstWhere('quiz_range_id', $selectedQuizRange->id)
+            : null;
 
         $attempt = null;
         $remainingSeconds = null;
@@ -65,82 +84,77 @@ class QuizController extends Controller
         $maxPossibleScore = null;
         $currentDayNumber = null;
 
-        if ($quizDay) {
-            $quizDay->load('quizRange');
-            $quizRange = $quizDay->quizRange;
-
-            if ($quizRange) {
-                $quizDays = $quizRange->quizDays()
+        if ($quizDay && $selectedQuizRange) {
+            $quizDays = $selectedQuizRange->quizDays()
                     ->orderBy('quiz_date')
                     ->get();
-                $totalDays = $quizDays->count();
+            $totalDays = $quizDays->count();
 
-                $attemptsByDay = Attempt::query()
-                    ->where('user_id', $request->user()->id)
-                    ->whereIn('quiz_day_id', $quizDays->pluck('id'))
-                    ->get()
-                    ->keyBy('quiz_day_id');
+            $attemptsByDay = Attempt::query()
+                ->where('user_id', $request->user()->id)
+                ->whereIn('quiz_day_id', $quizDays->pluck('id'))
+                ->get()
+                ->keyBy('quiz_day_id');
 
-                $currentScore = $attemptsByDay
-                    ->where('status', 'submitted')
-                    ->sum('score');
+            $currentScore = $attemptsByDay
+                ->where('status', 'submitted')
+                ->sum('score');
 
-                $maxPossibleScore = Question::query()
-                    ->whereIn('quiz_day_id', $quizDays->pluck('id'))
-                    ->sum('points');
+            $maxPossibleScore = Question::query()
+                ->whereIn('quiz_day_id', $quizDays->pluck('id'))
+                ->sum('points');
 
-                $daysProgress = $quizDays->map(function (QuizDay $day, int $index) use (
-                    $now,
-                    $today,
-                    $attemptsByDay,
-                    &$answeredCorrectCount,
-                    &$answeredWrongCount,
-                    &$missedCount,
-                    &$remainingCount
-                ) {
-                    // Status mapping: treat expired or missing attempts as missed; remaining counts only future days.
-                    $dayDate = Carbon::parse($day->quiz_date);
-                    $isToday = $dayDate->isSameDay($today);
-                    $attempt = $attemptsByDay->get($day->id);
-                    $isSubmitted = $attempt && $attempt->status === 'submitted';
-                    $isExpired = $attempt && $attempt->status === 'expired';
-                    $expiresAt = $attempt?->expires_at ? Carbon::parse($attempt->expires_at) : null;
+            $daysProgress = $quizDays->map(function (QuizDay $day, int $index) use (
+                $now,
+                $today,
+                $attemptsByDay,
+                &$answeredCorrectCount,
+                &$answeredWrongCount,
+                &$missedCount,
+                &$remainingCount
+            ) {
+                // Status mapping: treat expired or missing attempts as missed; remaining counts only future days.
+                $dayDate = Carbon::parse($day->quiz_date);
+                $isToday = $dayDate->isSameDay($today);
+                $attempt = $attemptsByDay->get($day->id);
+                $isSubmitted = $attempt && $attempt->status === 'submitted';
+                $isExpired = $attempt && $attempt->status === 'expired';
+                $expiresAt = $attempt?->expires_at ? Carbon::parse($attempt->expires_at) : null;
 
-                    if ($attempt && $attempt->status === 'in_progress' && $expiresAt && $now->greaterThanOrEqualTo($expiresAt)) {
-                        $isExpired = true; // Safety: in-progress attempts past expiry are treated as expired.
-                    }
+                if ($attempt && $attempt->status === 'in_progress' && $expiresAt && $now->greaterThanOrEqualTo($expiresAt)) {
+                    $isExpired = true; // Safety: in-progress attempts past expiry are treated as expired.
+                }
 
-                    $isCorrect = $isSubmitted && $attempt->score > 0;
+                $isCorrect = $isSubmitted && $attempt->score > 0;
 
-                    if ($dayDate->lt($today)) {
-                        $status = $isSubmitted ? ($isCorrect ? 'correct' : 'wrong') : 'missed';
-                    } elseif ($isToday) {
-                        $status = $isSubmitted ? ($isCorrect ? 'correct' : 'wrong') : ($isExpired ? 'missed' : 'today');
-                    } else {
-                        $status = 'upcoming';
-                    }
+                if ($dayDate->lt($today)) {
+                    $status = $isSubmitted ? ($isCorrect ? 'correct' : 'wrong') : 'missed';
+                } elseif ($isToday) {
+                    $status = $isSubmitted ? ($isCorrect ? 'correct' : 'wrong') : ($isExpired ? 'missed' : 'today');
+                } else {
+                    $status = 'upcoming';
+                }
 
-                    if ($status === 'correct') {
-                        $answeredCorrectCount += 1;
-                    } elseif ($status === 'wrong') {
-                        $answeredWrongCount += 1;
-                    } elseif ($status === 'missed') {
-                        $missedCount += 1;
-                    } elseif ($status === 'upcoming') {
-                        $remainingCount += 1; // Only future days count as remaining.
-                    }
+                if ($status === 'correct') {
+                    $answeredCorrectCount += 1;
+                } elseif ($status === 'wrong') {
+                    $answeredWrongCount += 1;
+                } elseif ($status === 'missed') {
+                    $missedCount += 1;
+                } elseif ($status === 'upcoming') {
+                    $remainingCount += 1; // Only future days count as remaining.
+                }
 
-                    return [
-                        'id' => $day->id,
-                        'label' => $index + 1,
-                        'date' => $day->quiz_date,
-                        'status' => $status,
-                        'is_today' => $isToday,
-                    ];
-                });
+                return [
+                    'id' => $day->id,
+                    'label' => $index + 1,
+                    'date' => $day->quiz_date,
+                    'status' => $status,
+                    'is_today' => $isToday,
+                ];
+            });
 
-                $currentDayNumber = optional($daysProgress->firstWhere('is_today', true))['label'];
-            }
+            $currentDayNumber = optional($daysProgress->firstWhere('is_today', true))['label'];
 
             $attempt = Attempt::query()
                 ->where('quiz_day_id', $quizDay->id)
@@ -181,6 +195,9 @@ class QuizController extends Controller
 
         return view('quiz.today', [
             'quizDay' => $quizDay,
+            'activeQuizRanges' => $activeQuizRanges,
+            'selectedQuizRange' => $selectedQuizRange,
+            'selectedQuizDay' => $quizDay,
             'attempt' => $attempt,
             'remainingSeconds' => $remainingSeconds,
             'question' => $question,
@@ -205,13 +222,22 @@ class QuizController extends Controller
 
         $quizDay->load('quizRange');
 
-        if (! $quizDay->quizRange?->is_published || $quizDay->start_at > $now || $quizDay->end_at < $now) {
-            return redirect('/quiz/today')->with('status', 'Quiz not available');
+        $redirect = redirect()->route('quiz.today', [
+            'quiz_range_id' => $quizDay->quiz_range_id,
+        ]);
+
+        if (
+            ! $quizDay->quizRange?->is_published
+            || ! $quizDay->quizRange?->is_visible
+            || $quizDay->start_at > $now
+            || $quizDay->end_at < $now
+        ) {
+            return $redirect->with('status', 'Quiz not available');
         }
 
         $user = $request->user();
         if (! $user) {
-            return redirect('/quiz/today')->with('status', 'Unauthorized');
+            return $redirect->with('status', 'Unauthorized');
         }
 
         $created = false;
@@ -257,23 +283,23 @@ class QuizController extends Controller
             if ($attempt->status === 'in_progress') {
                 $expiresAt = Carbon::parse($attempt->expires_at);
                 if ($now->lessThan($expiresAt)) {
-                    return redirect('/quiz/today')->with('status', 'Attempt already started');
+                    return $redirect->with('status', 'Attempt already started');
                 }
 
                 $attempt->update(['status' => 'expired']);
 
-                return redirect('/quiz/today')->with('status', 'Attempt expired');
+                return $redirect->with('status', 'Attempt expired');
             }
 
             if ($attempt->status === 'submitted') {
-                return redirect('/quiz/today')->with('status', 'Already attempted');
+                return $redirect->with('status', 'Already attempted');
             }
 
             if ($attempt->status === 'expired') {
-                return redirect('/quiz/today')->with('status', 'Attempt expired');
+                return $redirect->with('status', 'Attempt expired');
             }
         }
 
-        return redirect('/quiz/today')->with('status', 'Attempt started');
+        return $redirect->with('status', 'Attempt started');
     }
 }
