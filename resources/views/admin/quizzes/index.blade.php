@@ -4,11 +4,11 @@
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 sm:px-6 lg:px-8">
         <header class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.3em] text-indigo-500">Admin</p>
-                <h1 class="mt-2 text-2xl font-semibold text-gray-900">Manage Quizzes</h1>
+                <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500">Admin</p>
+                <h1 class="mt-2 text-2xl font-semibold text-emerald-700">Manage Quizzes</h1>
                 <p class="mt-1 text-sm text-gray-600">Create quiz days, add questions, and maintain choices.</p>
             </div>
-            <a class="text-sm font-semibold text-indigo-600 hover:text-indigo-700" href="{{ route('admin.index') }}">Back to Admin</a>
+            <a class="text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('admin.index') }}">Back to Admin</a>
         </header>
 
         @if (session('status'))
@@ -54,11 +54,11 @@
                         <input class="mt-1 w-full rounded-xl border-gray-300" type="number" id="duration_seconds" name="duration_seconds" min="1" value="{{ old('duration_seconds') }}" required>
                     </div>
                     <div class="flex items-center gap-2 pt-6">
-                        <input class="h-4 w-4 rounded border-gray-300 text-indigo-600" type="checkbox" id="is_published" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }}>
+                        <input class="h-4 w-4 rounded border-gray-300 text-emerald-600" type="checkbox" id="is_published" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }}>
                         <label class="text-sm text-gray-700" for="is_published">Published</label>
                     </div>
                     <div class="sm:col-span-2">
-                        <button class="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700" type="submit">Create Quiz Day</button>
+                        <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">Create Quiz Day</button>
                     </div>
                 </form>
             </div>
@@ -119,7 +119,7 @@
                             >
                         </div>
                     </div>
-                    <button class="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700" type="submit">
+                    <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">
                         Add Question
                     </button>
                 </form>
@@ -159,11 +159,11 @@
                             >
                         </div>
                         <div class="flex items-center gap-2 pt-6">
-                            <input class="h-4 w-4 rounded border-gray-300 text-indigo-600" type="checkbox" id="is_correct" name="is_correct" value="1" {{ old('is_correct') ? 'checked' : '' }}>
+                            <input class="h-4 w-4 rounded border-gray-300 text-emerald-600" type="checkbox" id="is_correct" name="is_correct" value="1" {{ old('is_correct') ? 'checked' : '' }}>
                             <label class="text-sm text-gray-700" for="is_correct">Mark as correct</label>
                         </div>
                     </div>
-                    <button class="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700" type="submit">
+                    <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">
                         Add Choice
                     </button>
                 </form>
@@ -260,7 +260,7 @@
                                             </div>
                                             <div class="flex items-center gap-2">
                                                 <input
-                                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600"
+                                                    class="h-4 w-4 rounded border-gray-300 text-emerald-600"
                                                     type="checkbox"
                                                     id="is_published_{{ $quizDay->id }}"
                                                     name="is_published"
@@ -269,7 +269,7 @@
                                                 >
                                                 <label class="text-xs text-gray-700" for="is_published_{{ $quizDay->id }}">Published</label>
                                             </div>
-                                            <button class="inline-flex items-center justify-center rounded-full bg-gray-900 px-4 py-1.5 text-xs font-semibold text-white" type="submit">Update</button>
+                                            <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700" type="submit">Update</button>
                                         </form>
                                     </td>
                                 </tr>
