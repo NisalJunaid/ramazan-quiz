@@ -29,7 +29,7 @@ Route::middleware(['auth', 'not_banned'])->group(function () {
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin', [AdminQuizController::class, 'index'])->name('admin.dashboard');
+    Route::view('/admin', 'admin.index')->name('admin.dashboard');
     Route::get('/admin/quizzes', [AdminQuizController::class, 'index'])->name('admin.quizzes.index');
     Route::post('/admin/quizzes', [AdminQuizController::class, 'store'])->name('admin.quizzes.store');
     Route::put('/admin/quizzes/{id}', [AdminQuizController::class, 'update'])->name('admin.quizzes.update');
