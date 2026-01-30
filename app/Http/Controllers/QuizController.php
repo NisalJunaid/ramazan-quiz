@@ -25,6 +25,7 @@ class QuizController extends Controller
 
         $attempt = null;
         $remainingSeconds = null;
+        $questions = collect();
 
         if ($quizDay) {
             $attempt = Attempt::query()
@@ -36,6 +37,12 @@ class QuizController extends Controller
                 $expiresAt = Carbon::parse($attempt->expires_at);
                 if ($now->lessThan($expiresAt)) {
                     $remainingSeconds = $now->diffInSeconds($expiresAt);
+                    $questions = $quizDay->questions()
+                        ->with(['choices' => function ($query) {
+                            $query->orderBy('order_index');
+                        }])
+                        ->orderBy('order_index')
+                        ->get();
                 }
             }
         }
@@ -44,6 +51,7 @@ class QuizController extends Controller
             'quizDay' => $quizDay,
             'attempt' => $attempt,
             'remainingSeconds' => $remainingSeconds,
+            'questions' => $questions,
             'now' => $now,
         ]);
     }

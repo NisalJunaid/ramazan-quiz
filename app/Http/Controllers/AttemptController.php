@@ -2,12 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Response;
+use App\Models\Answer;
+use App\Models\Attempt;
+use App\Models\QuizDay;
+use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AttemptController extends Controller
 {
-    public function submitAttempt(): Response
+    public function submitAttempt(Request $request, Attempt $attempt): RedirectResponse
     {
-        return response('Not implemented.', 501);
+        $user = $request->user();
+        if (! $user || $attempt->user_id !== $user->id) {
+            return redirect('/quiz/today')->with('status', 'Unauthorized');
+        }
+
+        if ($attempt->status !== 'in_progress') {
+            return redirect('/quiz/today')->with('status', 'Attempt not in progress');
+        }
+
+        $now = Carbon::now();
+        $expiresAt = Carbon::parse($attempt->expires_at);
+        if (! $now->lessThan($expiresAt)) {
+            $attempt->update(['status' => 'expired']);
+
+            return redirect('/quiz/today')->with('status', 'Attempt expired');
+        }
+
+        $quizDay = QuizDay::query()
+            ->with([
+                'questions' => function ($query) {
+                    $query->orderBy('order_index');
+                },
+                'questions.choices' => function ($query) {
+                    $query->orderBy('order_index');
+                },
+            ])
+            ->find($attempt->quiz_day_id);
+
+        if (! $quizDay) {
+            return redirect('/quiz/today')->with('status', 'Quiz not available');
+        }
+
+        $submittedAnswers = $request->input('answers', []);
+        $score = 0;
+
+        DB::transaction(function () use ($attempt, $quizDay, $submittedAnswers, &$score, $now) {
+            foreach ($quizDay->questions as $question) {
+                $choiceId = $submittedAnswers[$question->id] ?? null;
+                if (! $choiceId) {
+                    continue;
+                }
+
+                $choice = $question->choices->firstWhere('id', (int) $choiceId);
+                if (! $choice) {
+                    continue;
+                }
+
+                $isCorrect = (bool) $choice->is_correct;
+                $pointsAwarded = $isCorrect ? $question->points : 0;
+
+                Answer::updateOrCreate(
+                    [
+                        'attempt_id' => $attempt->id,
+                        'question_id' => $question->id,
+                    ],
+                    [
+                        'choice_id' => $choice->id,
+                        'is_correct' => $isCorrect,
+                        'points_awarded' => $pointsAwarded,
+                    ]
+                );
+
+                $score += $pointsAwarded;
+            }
+
+            $attempt->update([
+                'submitted_at' => $now,
+                'score' => $score,
+                'status' => 'submitted',
+            ]);
+        });
+
+        return redirect('/quiz/today')->with('status', 'Attempt submitted');
     }
 }
