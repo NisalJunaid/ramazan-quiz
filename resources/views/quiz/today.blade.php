@@ -45,31 +45,29 @@
                         Attempt in progress. Remaining time: <span class="font-semibold">{{ $remainingSeconds }} seconds</span>
                     </div>
 
-                    @if ($questions->isEmpty())
+                    @if (! $question)
                         <p class="mt-4 text-sm text-gray-600">No questions available.</p>
                     @else
                         <form class="mt-6 space-y-5" method="POST" action="{{ route('attempt.submit', $attempt) }}">
                             @csrf
-                            @foreach ($questions as $question)
-                                <fieldset class="rounded-2xl border border-gray-200 bg-gray-50/40 p-5">
-                                    <legend class="text-sm font-semibold text-gray-800">
-                                        {{ $question->order_index }}. {{ $question->question_text }}
-                                    </legend>
-                                    <div class="mt-4 space-y-3">
-                                        @foreach ($question->choices as $choice)
-                                            <label class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm">
-                                                <input
-                                                    class="h-4 w-4 text-emerald-600"
-                                                    type="radio"
-                                                    name="answers[{{ $question->id }}]"
-                                                    value="{{ $choice->id }}"
-                                                >
-                                                <span>{{ $choice->choice_text }}</span>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                </fieldset>
-                            @endforeach
+                            <fieldset class="rounded-2xl border border-gray-200 bg-gray-50/40 p-5">
+                                <legend class="text-sm font-semibold text-gray-800">
+                                    {{ $question->order_index }}. {{ $question->question_text }}
+                                </legend>
+                                <div class="mt-4 space-y-3">
+                                    @foreach ($question->choices as $choice)
+                                        <label class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm">
+                                            <input
+                                                class="h-4 w-4 text-emerald-600"
+                                                type="radio"
+                                                name="answers[{{ $question->id }}]"
+                                                value="{{ $choice->id }}"
+                                            >
+                                            <span>{{ $choice->choice_text }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </fieldset>
                             <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">
                                 Submit Answers
                             </button>
@@ -88,3 +86,13 @@
         @endif
     </div>
 @endsection
+
+@push('live-reload')
+    @if ($quizDay)
+        <script>
+            window.liveReloadChannels = window.liveReloadChannels || [];
+            window.liveReloadChannels.push({ name: 'quiz-day.{{ $quizDay->id }}', event: 'QuizDayChanged' });
+            window.liveReloadChannels.push({ name: 'leaderboard.{{ $quizDay->id }}', event: 'LeaderboardChanged' });
+        </script>
+    @endif
+@endpush

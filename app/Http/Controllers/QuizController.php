@@ -15,22 +15,43 @@ class QuizController extends Controller
 {
     public function home(): View
     {
-        return view('quiz.home');
+        $today = Carbon::today();
+        $now = Carbon::now();
+
+        $quizDay = QuizDay::query()
+            ->whereDate('quiz_date', $today)
+            ->whereHas('quizRange', function ($query) {
+                $query->where('is_published', true);
+            })
+            ->first();
+
+        $isActive = $quizDay
+            && $quizDay->start_at <= $now
+            && $quizDay->end_at >= $now;
+
+        return view('quiz.home', [
+            'quizDay' => $quizDay,
+            'isActive' => $isActive,
+        ]);
     }
 
     public function showTodayQuiz(Request $request): View
     {
         $now = Carbon::now();
+        $today = Carbon::today();
 
         $quizDay = QuizDay::query()
-            ->where('is_published', true)
+            ->whereDate('quiz_date', $today)
             ->where('start_at', '<=', $now)
             ->where('end_at', '>=', $now)
+            ->whereHas('quizRange', function ($query) {
+                $query->where('is_published', true);
+            })
             ->first();
 
         $attempt = null;
         $remainingSeconds = null;
-        $questions = collect();
+        $question = null;
 
         if ($quizDay) {
             $attempt = Attempt::query()
@@ -42,12 +63,11 @@ class QuizController extends Controller
                 $expiresAt = Carbon::parse($attempt->expires_at);
                 if ($now->lessThan($expiresAt)) {
                     $remainingSeconds = $now->diffInSeconds($expiresAt);
-                    $questions = $quizDay->questions()
+                    $question = $quizDay->question()
                         ->with(['choices' => function ($query) {
                             $query->orderBy('order_index');
                         }])
-                        ->orderBy('order_index')
-                        ->get();
+                        ->first();
                 }
             }
         }
@@ -56,7 +76,7 @@ class QuizController extends Controller
             'quizDay' => $quizDay,
             'attempt' => $attempt,
             'remainingSeconds' => $remainingSeconds,
-            'questions' => $questions,
+            'question' => $question,
             'now' => $now,
         ]);
     }
@@ -65,7 +85,9 @@ class QuizController extends Controller
     {
         $now = Carbon::now();
 
-        if (! $quizDay->is_published || $quizDay->start_at > $now || $quizDay->end_at < $now) {
+        $quizDay->load('quizRange');
+
+        if (! $quizDay->quizRange?->is_published || $quizDay->start_at > $now || $quizDay->end_at < $now) {
             return redirect('/quiz/today')->with('status', 'Quiz not available');
         }
 

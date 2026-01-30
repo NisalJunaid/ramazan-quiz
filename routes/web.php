@@ -72,13 +72,25 @@ Route::middleware(['auth', 'admin'])
         Route::put('/quizzes/{id}', [AdminQuizController::class, 'update'])
             ->name('quizzes.update');
 
+        Route::get('/quizzes/{quizRange}/days', [AdminQuizController::class, 'showDays'])
+            ->name('quizzes.days');
+
+        Route::get('/quizzes/{quizRange}/days/{quizDay}/edit', [AdminQuizController::class, 'editDay'])
+            ->name('quizzes.days.edit');
+
         // Questions
         Route::post('/questions', [AdminQuestionController::class, 'store'])
             ->name('questions.store');
 
+        Route::put('/questions/{quizDay}', [AdminQuestionController::class, 'update'])
+            ->name('questions.update');
+
         // Choices
         Route::post('/choices', [AdminChoiceController::class, 'store'])
             ->name('choices.store');
+
+        Route::put('/choices/{choice}', [AdminChoiceController::class, 'update'])
+            ->name('choices.update');
     });
 
 /*

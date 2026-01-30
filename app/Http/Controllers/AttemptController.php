@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LeaderboardChanged;
 use App\Models\Answer;
 use App\Models\Attempt;
 use App\Models\QuizDay;
@@ -33,10 +34,7 @@ class AttemptController extends Controller
 
         $quizDay = QuizDay::query()
             ->with([
-                'questions' => function ($query) {
-                    $query->orderBy('order_index');
-                },
-                'questions.choices' => function ($query) {
+                'question.choices' => function ($query) {
                     $query->orderBy('order_index');
                 },
             ])
@@ -46,30 +44,33 @@ class AttemptController extends Controller
             return redirect('/quiz/today')->with('status', 'Quiz not available');
         }
 
+        $question = $quizDay->question;
+        if (! $question) {
+            return redirect('/quiz/today')->with('status', 'Quiz not available');
+        }
+
         $submittedAnswers = $request->input('answers', []);
         $score = 0;
 
-        DB::transaction(function () use ($attempt, $quizDay, $submittedAnswers, &$score, $now) {
-            foreach ($quizDay->questions as $question) {
-                $choiceId = $submittedAnswers[$question->id] ?? null;
-                $choice = null;
-                if ($choiceId) {
-                    $choice = $question->choices->firstWhere('id', (int) $choiceId);
-                }
-
-                $isCorrect = $choice ? (bool) $choice->is_correct : false;
-                $pointsAwarded = $isCorrect ? $question->points : 0;
-
-                Answer::create([
-                    'attempt_id' => $attempt->id,
-                    'question_id' => $question->id,
-                    'choice_id' => $choice?->id,
-                    'is_correct' => $isCorrect,
-                    'points_awarded' => $pointsAwarded,
-                ]);
-
-                $score += $pointsAwarded;
+        DB::transaction(function () use ($attempt, $question, $submittedAnswers, &$score, $now) {
+            $choiceId = $submittedAnswers[$question->id] ?? null;
+            $choice = null;
+            if ($choiceId) {
+                $choice = $question->choices->firstWhere('id', (int) $choiceId);
             }
+
+            $isCorrect = $choice ? (bool) $choice->is_correct : false;
+            $pointsAwarded = $isCorrect ? $question->points : 0;
+
+            Answer::create([
+                'attempt_id' => $attempt->id,
+                'question_id' => $question->id,
+                'choice_id' => $choice?->id,
+                'is_correct' => $isCorrect,
+                'points_awarded' => $pointsAwarded,
+            ]);
+
+            $score += $pointsAwarded;
 
             $attempt->update([
                 'submitted_at' => $now,
@@ -77,6 +78,8 @@ class AttemptController extends Controller
                 'status' => 'submitted',
             ]);
         });
+
+        event(new LeaderboardChanged($attempt->quiz_day_id));
 
         return redirect('/quiz/today')
             ->with('status', 'Submitted')

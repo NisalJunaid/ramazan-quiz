@@ -33,5 +33,12 @@
                 @yield('content')
             </main>
         </div>
+
+        <script>
+            window.liveReloadChannels = [
+                { name: 'quiz-range', event: ['QuizRangeChanged', 'QuizDayChanged', 'LeaderboardChanged'] },
+            ];
+        </script>
+        @stack('live-reload')
     </body>
 </html>

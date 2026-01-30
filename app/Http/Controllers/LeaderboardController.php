@@ -15,14 +15,10 @@ class LeaderboardController extends Controller
 
         $quizDay = QuizDay::query()
             ->whereDate('quiz_date', $today)
+            ->whereHas('quizRange', function ($query) {
+                $query->where('is_published', true);
+            })
             ->first();
-
-        if (! $quizDay) {
-            $quizDay = QuizDay::query()
-                ->where('is_published', true)
-                ->orderByDesc('quiz_date')
-                ->first();
-        }
 
         $attempts = collect();
 
