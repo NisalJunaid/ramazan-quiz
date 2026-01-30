@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attempt;
 use App\Models\QuizDay;
+use App\Models\Question;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -52,8 +53,88 @@ class QuizController extends Controller
         $attempt = null;
         $remainingSeconds = null;
         $question = null;
+        $selectedChoiceId = null;
+        $correctChoiceId = null;
+        $daysProgress = collect();
+        $totalDays = 0;
+        $answeredCorrectCount = 0;
+        $answeredWrongCount = 0;
+        $missedCount = 0;
+        $remainingCount = 0;
+        $currentScore = 0;
+        $maxPossibleScore = null;
+        $currentDayNumber = null;
 
         if ($quizDay) {
+            $quizDay->load('quizRange');
+            $quizRange = $quizDay->quizRange;
+
+            if ($quizRange) {
+                $quizDays = $quizRange->quizDays()
+                    ->orderBy('quiz_date')
+                    ->get();
+                $totalDays = $quizDays->count();
+
+                $attemptsByDay = Attempt::query()
+                    ->where('user_id', $request->user()->id)
+                    ->whereIn('quiz_day_id', $quizDays->pluck('id'))
+                    ->get()
+                    ->keyBy('quiz_day_id');
+
+                $currentScore = $attemptsByDay
+                    ->where('status', 'submitted')
+                    ->sum('score');
+
+                $maxPossibleScore = Question::query()
+                    ->whereIn('quiz_day_id', $quizDays->pluck('id'))
+                    ->sum('points');
+
+                $daysProgress = $quizDays->map(function (QuizDay $day, int $index) use (
+                    $today,
+                    $attemptsByDay,
+                    &$answeredCorrectCount,
+                    &$answeredWrongCount,
+                    &$missedCount,
+                    &$remainingCount
+                ) {
+                    // Status mapping: past days without attempts are missed, submitted attempts are correct/wrong,
+                    // today is highlighted unless already submitted, future days are upcoming.
+                    $dayDate = Carbon::parse($day->quiz_date);
+                    $isToday = $dayDate->isSameDay($today);
+                    $attempt = $attemptsByDay->get($day->id);
+                    $isSubmitted = $attempt && $attempt->status === 'submitted';
+                    $isCorrect = $isSubmitted && $attempt->score > 0;
+
+                    if ($dayDate->lt($today)) {
+                        $status = $isSubmitted ? ($isCorrect ? 'correct' : 'wrong') : 'missed';
+                    } elseif ($isToday) {
+                        $status = $isSubmitted ? ($isCorrect ? 'correct' : 'wrong') : 'today';
+                    } else {
+                        $status = 'upcoming';
+                    }
+
+                    if ($status === 'correct') {
+                        $answeredCorrectCount += 1;
+                    } elseif ($status === 'wrong') {
+                        $answeredWrongCount += 1;
+                    } elseif ($status === 'missed') {
+                        $missedCount += 1;
+                    } else {
+                        $remainingCount += 1;
+                    }
+
+                    return [
+                        'id' => $day->id,
+                        'label' => $index + 1,
+                        'date' => $day->quiz_date,
+                        'status' => $status,
+                        'is_today' => $isToday,
+                    ];
+                });
+
+                $currentDayNumber = optional($daysProgress->firstWhere('is_today', true))['label'];
+            }
+
             $attempt = Attempt::query()
                 ->where('quiz_day_id', $quizDay->id)
                 ->where('user_id', $request->user()->id)
@@ -70,6 +151,25 @@ class QuizController extends Controller
                         ->first();
                 }
             }
+
+            if ($attempt && $attempt->status === 'submitted') {
+                $attempt->load(['answers' => function ($query) {
+                    $query->with('choice');
+                }]);
+
+                $question = $question ?: $quizDay->question()
+                    ->with(['choices' => function ($query) {
+                        $query->orderBy('order_index');
+                    }])
+                    ->first();
+
+                if ($question) {
+                    $correctChoiceId = $question->choices
+                        ->firstWhere('is_correct', true)
+                        ?->id;
+                    $selectedChoiceId = $attempt->answers->first()?->choice_id;
+                }
+            }
         }
 
         return view('quiz.today', [
@@ -78,6 +178,17 @@ class QuizController extends Controller
             'remainingSeconds' => $remainingSeconds,
             'question' => $question,
             'now' => $now,
+            'totalDays' => $totalDays,
+            'daysProgress' => $daysProgress,
+            'answeredCorrectCount' => $answeredCorrectCount,
+            'answeredWrongCount' => $answeredWrongCount,
+            'missedCount' => $missedCount,
+            'remainingCount' => $remainingCount,
+            'currentScore' => $currentScore,
+            'maxPossibleScore' => $maxPossibleScore,
+            'selectedChoiceId' => $selectedChoiceId,
+            'correctChoiceId' => $correctChoiceId,
+            'currentDayNumber' => $currentDayNumber,
         ]);
     }
 

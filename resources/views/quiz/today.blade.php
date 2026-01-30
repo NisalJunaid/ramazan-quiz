@@ -21,25 +21,129 @@
                 No active quiz right now. Please check back later.
             </div>
         @else
-            <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-                <div class="flex flex-wrap items-start justify-between gap-4 border-b border-gray-100 pb-4">
+            <section class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+                <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                    <div class="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">Quiz Progress</p>
+                            <h2 class="mt-2 text-lg font-semibold text-gray-900">
+                                {{ $quizDay->quizRange?->title ?? "Ramazan Quiz" }}
+                            </h2>
+                            <p class="mt-2 text-sm text-gray-600">
+                                @if ($currentDayNumber)
+                                    Day {{ $currentDayNumber }} of {{ $totalDays }}
+                                @else
+                                    {{ $totalDays }} days in this quiz range
+                                @endif
+                            </p>
+                        </div>
+                        <div class="rounded-xl bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700">
+                            Total Days: {{ $totalDays }}
+                        </div>
+                    </div>
+
+                    <div class="mt-5 flex items-center gap-2 overflow-x-auto pb-2">
+                        @forelse ($daysProgress as $day)
+                            @php
+                                $statusClass = match ($day['status']) {
+                                    'correct' => 'bg-emerald-500 text-white',
+                                    'wrong' => 'bg-rose-500 text-white',
+                                    'missed' => 'bg-amber-400 text-white',
+                                    'today' => 'bg-emerald-100 text-emerald-700',
+                                    default => 'bg-gray-100 text-gray-400',
+                                };
+                                $ringClass = $day['is_today'] ? 'ring-2 ring-emerald-500 ring-offset-2' : '';
+                            @endphp
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold {{ $statusClass }} {{ $ringClass }}">
+                                    {{ $day['label'] }}
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-600">No quiz days available.</p>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap gap-4 text-xs text-gray-600">
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-emerald-500"></span> ✓ Correct
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-rose-500"></span> ✕ Wrong
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-amber-400"></span> ⏳ Missed
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-gray-200"></span> ○ Remaining
+                        </span>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">Score Summary</p>
+                    <div class="mt-4">
+                        <p class="text-3xl font-semibold text-gray-900">{{ $currentScore }}</p>
+                        <p class="mt-1 text-sm text-gray-600">
+                            Current Score
+                            @if ($maxPossibleScore)
+                                <span class="text-gray-400">/ {{ $maxPossibleScore }}</span>
+                            @endif
+                        </p>
+                    </div>
+                    <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+                        <div class="rounded-xl bg-emerald-50 px-3 py-3 text-emerald-800">
+                            <p class="text-xs uppercase tracking-wide text-emerald-600">Correct</p>
+                            <p class="mt-1 text-lg font-semibold">{{ $answeredCorrectCount }}</p>
+                        </div>
+                        <div class="rounded-xl bg-rose-50 px-3 py-3 text-rose-700">
+                            <p class="text-xs uppercase tracking-wide text-rose-500">Wrong</p>
+                            <p class="mt-1 text-lg font-semibold">{{ $answeredWrongCount }}</p>
+                        </div>
+                        <div class="rounded-xl bg-amber-50 px-3 py-3 text-amber-700">
+                            <p class="text-xs uppercase tracking-wide text-amber-600">Missed</p>
+                            <p class="mt-1 text-lg font-semibold">{{ $missedCount }}</p>
+                        </div>
+                        <div class="rounded-xl bg-gray-50 px-3 py-3 text-gray-700">
+                            <p class="text-xs uppercase tracking-wide text-gray-500">Remaining</p>
+                            <p class="mt-1 text-lg font-semibold">{{ $remainingCount }}</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">Quiz Window</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">Today's Question</p>
                         <h2 class="mt-2 text-xl font-semibold text-gray-900">{{ $quizDay->title }}</h2>
                         <p class="mt-2 text-sm text-gray-600">{{ $quizDay->start_at }} → {{ $quizDay->end_at }}</p>
                     </div>
-                    <div class="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                        Duration: <span class="font-semibold">{{ $quizDay->duration_seconds }} sec</span>
+                    <div class="flex w-full flex-col gap-3 sm:w-auto">
+                        <div class="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                            Duration: <span class="font-semibold">{{ $quizDay->duration_seconds }} sec</span>
+                        </div>
+                        @if ($attempt && $attempt->status === 'submitted')
+                            <div class="rounded-xl border {{ $attempt->score > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700' }} px-4 py-3 text-sm font-semibold">
+                                {{ $attempt->score > 0 ? 'Correct' : 'Wrong' }} · Score {{ $attempt->score }}
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 @if (!$attempt)
-                    <form class="mt-6" method="POST" action="{{ route('quiz.start', $quizDay) }}">
-                        @csrf
-                        <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">
-                            Start Quiz
-                        </button>
-                    </form>
+                    <div class="mt-6 rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/40 px-6 py-6 text-sm text-gray-700">
+                        <p class="text-base font-semibold text-gray-900">Ready for today's question?</p>
+                        <p class="mt-2 text-sm text-gray-600">
+                            Start your attempt to unlock the question and begin the timer.
+                        </p>
+                        <form class="mt-4" method="POST" action="{{ route('quiz.start', $quizDay) }}">
+                            @csrf
+                            <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">
+                                Start Quiz
+                            </button>
+                        </form>
+                    </div>
                 @elseif ($attempt->status === 'in_progress' && $remainingSeconds !== null)
                     @php
                         $formattedRemaining = gmdate('i:s', $remainingSeconds);
@@ -67,15 +171,20 @@
                     @else
                         <form id="quiz-attempt-form" class="mt-6 space-y-5" method="POST" action="{{ route('attempt.submit', $attempt) }}">
                             @csrf
-                            <fieldset class="rounded-2xl border border-gray-200 bg-gray-50/40 p-5">
-                                <legend class="text-sm font-semibold text-gray-800">
-                                    {{ $question->order_index }}. {{ $question->question_text }}
-                                </legend>
-                                <div class="mt-4 space-y-3">
+                            <div class="rounded-2xl border border-gray-200 bg-gray-50/60 p-5">
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <p class="text-sm font-semibold text-gray-800">
+                                        {{ $question->order_index }}. {{ $question->question_text }}
+                                    </p>
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        {{ $question->points }} pts
+                                    </span>
+                                </div>
+                                <div class="mt-4 grid gap-3">
                                     @foreach ($question->choices as $choice)
-                                        <label class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm">
+                                        <label class="flex cursor-pointer items-start gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-4 text-sm text-gray-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50/40">
                                             <input
-                                                class="h-4 w-4 text-emerald-600"
+                                                class="mt-1 h-4 w-4 text-emerald-600"
                                                 type="radio"
                                                 name="answers[{{ $question->id }}]"
                                                 value="{{ $choice->id }}"
@@ -84,7 +193,7 @@
                                         </label>
                                     @endforeach
                                 </div>
-                            </fieldset>
+                            </div>
                             <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">
                                 Submit Answers
                             </button>
@@ -194,9 +303,58 @@
                         });
                     </script>
                 @elseif ($attempt->status === 'submitted')
-                    <div class="mt-6 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                        Submitted successfully. Score: <span class="font-semibold">{{ $attempt->score }}</span>
-                    </div>
+                    @php
+                        $isCorrect = $attempt->score > 0;
+                    @endphp
+                    @if (! $question)
+                        <p class="mt-4 text-sm text-gray-600">No questions available.</p>
+                    @else
+                        <div class="mt-6 rounded-2xl border border-gray-200 bg-gray-50/60 p-5">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <p class="text-sm font-semibold text-gray-800">
+                                    {{ $question->order_index }}. {{ $question->question_text }}
+                                </p>
+                                <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    {{ $question->points }} pts
+                                </span>
+                            </div>
+                            <p class="mt-3 text-sm {{ $isCorrect ? 'text-emerald-700' : 'text-rose-700' }}">
+                                {{ $isCorrect ? 'You answered correctly.' : 'Your answer was incorrect.' }}
+                            </p>
+                            <div class="mt-4 grid gap-3">
+                                @foreach ($question->choices as $choice)
+                                    @php
+                                        $isChoiceCorrect = $correctChoiceId === $choice->id;
+                                        $isChoiceSelected = $selectedChoiceId === $choice->id;
+                                        $choiceClasses = 'border-gray-200 bg-white text-gray-700';
+                                        if ($isChoiceCorrect) {
+                                            $choiceClasses = 'border-emerald-300 bg-emerald-50 text-emerald-900';
+                                        } elseif ($isChoiceSelected) {
+                                            $choiceClasses = 'border-rose-300 bg-rose-50 text-rose-700';
+                                        }
+                                    @endphp
+                                    <label class="flex items-start gap-3 rounded-2xl border px-4 py-4 text-sm shadow-sm {{ $choiceClasses }} opacity-80">
+                                        <input
+                                            class="mt-1 h-4 w-4 text-emerald-600"
+                                            type="radio"
+                                            name="answers[{{ $question->id }}]"
+                                            value="{{ $choice->id }}"
+                                            {{ $isChoiceSelected ? 'checked' : '' }}
+                                            disabled
+                                        >
+                                        <div class="flex flex-1 items-start justify-between gap-3">
+                                            <span>{{ $choice->choice_text }}</span>
+                                            @if ($isChoiceCorrect)
+                                                <span class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Correct</span>
+                                            @elseif ($isChoiceSelected)
+                                                <span class="text-xs font-semibold uppercase tracking-wide text-rose-600">Your answer</span>
+                                            @endif
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 @else
                     <div class="mt-6 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                         Attempt expired.
