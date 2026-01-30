@@ -85,6 +85,9 @@ Route::middleware(['auth', 'admin'])
         Route::put('/questions/{quizDay}', [AdminQuestionController::class, 'update'])
             ->name('questions.update');
 
+        Route::put('/quizzes/days/{quizDay}/question', [AdminQuestionController::class, 'save'])
+            ->name('questions.save');
+
         // Choices
         Route::post('/choices', [AdminChoiceController::class, 'store'])
             ->name('choices.store');
