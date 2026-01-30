@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 sm:px-6 lg:px-8" data-quiz-page>
         <header class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-semibold text-emerald-700">Today's Quiz</h1>
@@ -103,19 +103,17 @@
                             const remainingFromServer = Number(timerContainer.dataset.remainingSeconds);
                             let remainingSeconds = Number.isFinite(remainingFromServer) ? remainingFromServer : totalSeconds;
                             const quizForm = document.querySelector('#quiz-attempt-form');
+                            const overlay = document.querySelector('[data-quiz-expired-overlay]');
+                            const quizPage = document.querySelector('[data-quiz-page]');
+                            const redirectCountdown = overlay ? overlay.querySelector('[data-redirect-countdown]') : null;
+                            const redirectSeconds = overlay ? Number(overlay.dataset.redirectSeconds || 15) : 0;
+                            const redirectUrl = overlay ? overlay.dataset.redirectUrl : null;
 
                             if (!totalSeconds || !timerText || !timerBar) {
                                 return;
                             }
 
-                            let hasSubmitted = false;
-
-                            if (quizForm) {
-                                quizForm.addEventListener('submit', () => {
-                                    hasSubmitted = true;
-                                    quizForm.dataset.submitted = 'true';
-                                });
-                            }
+                            let overlayShown = false;
 
                             const formatTime = (seconds) => {
                                 const minutes = Math.floor(seconds / 60);
@@ -139,14 +137,47 @@
                                 });
                             };
 
+                            // Overlay logic for expired attempts + redirect countdown.
+                            const showExpiredOverlay = () => {
+                                if (!overlay || overlayShown) {
+                                    return;
+                                }
+                                overlayShown = true;
+                                overlay.classList.remove('pointer-events-none', 'opacity-0');
+                                overlay.classList.add('opacity-100');
+                                overlay.setAttribute('aria-hidden', 'false');
+                                document.body.classList.add('overflow-hidden');
+
+                                if (quizPage) {
+                                    quizPage.classList.add('pointer-events-none', 'select-none');
+                                    quizPage.setAttribute('aria-hidden', 'true');
+                                }
+
+                                if (redirectCountdown) {
+                                    let remainingRedirect = Number.isFinite(redirectSeconds) && redirectSeconds > 0 ? redirectSeconds : 15;
+                                    redirectCountdown.textContent = remainingRedirect;
+
+                                    const redirectInterval = setInterval(() => {
+                                        remainingRedirect -= 1;
+                                        redirectCountdown.textContent = Math.max(remainingRedirect, 0);
+
+                                        if (remainingRedirect <= 0) {
+                                            clearInterval(redirectInterval);
+                                            if (redirectUrl) {
+                                                window.location.href = redirectUrl;
+                                            }
+                                        }
+                                    }, 1000);
+                                }
+
+                                overlay.focus({ preventScroll: true });
+                            };
+
                             updateDisplay();
 
                             if (remainingSeconds <= 0) {
                                 disableInputs();
-                                if (quizForm && !hasSubmitted && quizForm.dataset.submitted !== 'true') {
-                                    hasSubmitted = true;
-                                    quizForm.submit();
-                                }
+                                showExpiredOverlay();
                                 return;
                             }
 
@@ -157,11 +188,7 @@
                                 if (remainingSeconds <= 0) {
                                     clearInterval(intervalId);
                                     disableInputs();
-
-                                    if (quizForm && !hasSubmitted && quizForm.dataset.submitted !== 'true') {
-                                        hasSubmitted = true;
-                                        quizForm.submit();
-                                    }
+                                    showExpiredOverlay();
                                 }
                             }, 1000);
                         });
@@ -176,6 +203,27 @@
                     </div>
                 @endif
             </section>
+
+            <div
+                class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-gray-900/70 opacity-0 backdrop-blur-sm transition-opacity duration-300"
+                data-quiz-expired-overlay
+                data-redirect-seconds="15"
+                data-redirect-url="{{ route('quiz.today') }}"
+                aria-hidden="true"
+                role="dialog"
+                aria-modal="true"
+                tabindex="-1"
+            >
+                <div class="mx-4 w-full max-w-md rounded-2xl bg-white px-6 py-8 text-center shadow-xl">
+                    <h2 class="text-2xl font-semibold text-gray-900">Oh no 😔</h2>
+                    <p class="mt-3 text-sm text-gray-600">
+                        You didn't submit the Answer on time. Try again tomorrow
+                    </p>
+                    <p class="mt-4 text-xs font-semibold uppercase tracking-wide text-emerald-600">
+                        Redirecting in <span class="tabular-nums" data-redirect-countdown>15</span> seconds…
+                    </p>
+                </div>
+            </div>
         @endif
     </div>
 @endsection
