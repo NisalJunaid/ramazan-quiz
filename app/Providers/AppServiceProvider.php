@@ -23,10 +23,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('*', function ($view) {
+            $now = Carbon::now();
             $today = Carbon::today();
 
             $quizDay = QuizDay::query()
                 ->whereDate('quiz_date', $today)
+                ->where('start_at', '<=', $now)
+                ->where('end_at', '>=', $now)
                 ->whereHas('quizRange', function ($query) {
                     $query->where('is_published', true)
                         ->where('is_visible', true);
@@ -34,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
                 ->with('quizRange')
                 ->first();
 
-            $leaderboardIsPublic = $quizDay?->quizRange?->leaderboard_is_public ?? true;
+            $leaderboardIsPublic = $quizDay?->quizRange?->leaderboard_is_public ?? false;
             $isAdmin = auth()->user()?->role === 'admin';
 
             $view->with([
