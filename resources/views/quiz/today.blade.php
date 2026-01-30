@@ -42,7 +42,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-5 flex items-center gap-2 overflow-x-auto pb-2">
+                    <div class="mt-5 flex flex-wrap items-center gap-3">
                         @forelse ($daysProgress as $day)
                             @php
                                 $statusClass = match ($day['status']) {
@@ -54,10 +54,8 @@
                                 };
                                 $ringClass = $day['is_today'] ? 'ring-2 ring-emerald-500 ring-offset-2' : '';
                             @endphp
-                            <div class="flex flex-col items-center gap-1">
-                                <div class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold {{ $statusClass }} {{ $ringClass }}">
-                                    {{ $day['label'] }}
-                                </div>
+                            <div class="flex h-9 w-9 flex-none items-center justify-center rounded-full text-xs font-semibold {{ $statusClass }} {{ $ringClass }}">
+                                {{ $day['label'] }}
                             </div>
                         @empty
                             <p class="text-sm text-gray-600">No quiz days available.</p>

@@ -90,6 +90,7 @@ class QuizController extends Controller
                     ->sum('points');
 
                 $daysProgress = $quizDays->map(function (QuizDay $day, int $index) use (
+                    $now,
                     $today,
                     $attemptsByDay,
                     &$answeredCorrectCount,
@@ -97,18 +98,24 @@ class QuizController extends Controller
                     &$missedCount,
                     &$remainingCount
                 ) {
-                    // Status mapping: past days without attempts are missed, submitted attempts are correct/wrong,
-                    // today is highlighted unless already submitted, future days are upcoming.
+                    // Status mapping: treat expired or missing attempts as missed; remaining counts only future days.
                     $dayDate = Carbon::parse($day->quiz_date);
                     $isToday = $dayDate->isSameDay($today);
                     $attempt = $attemptsByDay->get($day->id);
                     $isSubmitted = $attempt && $attempt->status === 'submitted';
+                    $isExpired = $attempt && $attempt->status === 'expired';
+                    $expiresAt = $attempt?->expires_at ? Carbon::parse($attempt->expires_at) : null;
+
+                    if ($attempt && $attempt->status === 'in_progress' && $expiresAt && $now->greaterThanOrEqualTo($expiresAt)) {
+                        $isExpired = true; // Safety: in-progress attempts past expiry are treated as expired.
+                    }
+
                     $isCorrect = $isSubmitted && $attempt->score > 0;
 
                     if ($dayDate->lt($today)) {
                         $status = $isSubmitted ? ($isCorrect ? 'correct' : 'wrong') : 'missed';
                     } elseif ($isToday) {
-                        $status = $isSubmitted ? ($isCorrect ? 'correct' : 'wrong') : 'today';
+                        $status = $isSubmitted ? ($isCorrect ? 'correct' : 'wrong') : ($isExpired ? 'missed' : 'today');
                     } else {
                         $status = 'upcoming';
                     }
@@ -119,8 +126,8 @@ class QuizController extends Controller
                         $answeredWrongCount += 1;
                     } elseif ($status === 'missed') {
                         $missedCount += 1;
-                    } else {
-                        $remainingCount += 1;
+                    } elseif ($status === 'upcoming') {
+                        $remainingCount += 1; // Only future days count as remaining.
                     }
 
                     return [
