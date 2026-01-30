@@ -26,6 +26,30 @@
             @elseif ($attempt->status === 'in_progress' && $remainingSeconds !== null)
                 <p>Quiz in progress.</p>
                 <p>Remaining time: {{ $remainingSeconds }} seconds</p>
+                @if ($questions->isEmpty())
+                    <p>No questions available.</p>
+                @else
+                    <form method="POST" action="{{ route('attempt.submit', $attempt) }}">
+                        @csrf
+                        @foreach ($questions as $question)
+                            <fieldset>
+                                <legend>{{ $question->order_index }}. {{ $question->question_text }}</legend>
+                                @foreach ($question->choices as $choice)
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="answers[{{ $question->id }}]"
+                                            value="{{ $choice->id }}"
+                                        >
+                                        {{ $choice->choice_text }}
+                                    </label>
+                                    <br>
+                                @endforeach
+                            </fieldset>
+                        @endforeach
+                        <button type="submit">Submit Answers</button>
+                    </form>
+                @endif
             @elseif ($attempt->status === 'submitted')
                 <p>Already submitted.</p>
                 <p>Score: {{ $attempt->score }}</p>
