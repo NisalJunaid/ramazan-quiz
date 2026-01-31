@@ -185,6 +185,81 @@
                 </div>
 
                 <div class="grid gap-4 rounded-2xl border border-dashed p-4">
+                    <div>
+                        <h3 class="text-base font-semibold text-theme">{{ text('admin.theme.logo.home.title', 'Homepage hero logo size') }}</h3>
+                        <p class="mt-1 text-sm text-muted">{{ text('admin.theme.logo.home.helper', 'Adjust sizing for the homepage hero logo independently from the global logo settings.') }}</p>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-logo-width">
+                                {{ text('admin.theme.logo.home.width', 'Homepage logo width') }}
+                            </label>
+                            <input
+                                id="home-logo-width"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="number"
+                                name="home_logo_width"
+                                step="0.1"
+                                min="0"
+                                value="{{ old('home_logo_width', $settings->home_logo_width) }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-logo-width-unit">
+                                {{ text('admin.theme.logo.home.width_unit', 'Homepage width unit') }}
+                            </label>
+                            <select
+                                id="home-logo-width-unit"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                name="home_logo_width_unit"
+                                required
+                            >
+                                @php
+                                    $selectedHomeWidthUnit = old('home_logo_width_unit', $settings->home_logo_width_unit ?? 'px');
+                                @endphp
+                                <option value="px" {{ $selectedHomeWidthUnit === 'px' ? 'selected' : '' }}>px</option>
+                                <option value="%" {{ $selectedHomeWidthUnit === '%' ? 'selected' : '' }}>%</option>
+                                <option value="rem" {{ $selectedHomeWidthUnit === 'rem' ? 'selected' : '' }}>rem</option>
+                                <option value="vw" {{ $selectedHomeWidthUnit === 'vw' ? 'selected' : '' }}>vw</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-logo-height">
+                                {{ text('admin.theme.logo.home.height', 'Homepage logo height (optional)') }}
+                            </label>
+                            <input
+                                id="home-logo-height"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="number"
+                                name="home_logo_height"
+                                step="0.1"
+                                min="0"
+                                value="{{ old('home_logo_height', $settings->home_logo_height) }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-logo-height-unit">
+                                {{ text('admin.theme.logo.home.height_unit', 'Homepage height unit') }}
+                            </label>
+                            <select
+                                id="home-logo-height-unit"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                name="home_logo_height_unit"
+                            >
+                                @php
+                                    $selectedHomeHeightUnit = old('home_logo_height_unit', $settings->home_logo_height_unit);
+                                @endphp
+                                <option value="" {{ $selectedHomeHeightUnit === null ? 'selected' : '' }}>{{ text('admin.theme.logo.home.height_unit_auto', 'Auto') }}</option>
+                                <option value="px" {{ $selectedHomeHeightUnit === 'px' ? 'selected' : '' }}>px</option>
+                                <option value="%" {{ $selectedHomeHeightUnit === '%' ? 'selected' : '' }}>%</option>
+                                <option value="rem" {{ $selectedHomeHeightUnit === 'rem' ? 'selected' : '' }}>rem</option>
+                                <option value="vw" {{ $selectedHomeHeightUnit === 'vw' ? 'selected' : '' }}>vw</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid gap-4 rounded-2xl border border-dashed p-4">
                     @php
                         $primaryColor = old('primary_color', $settings->primary_color ?? '#059669');
                         $primaryHoverColor = old('primary_hover_color', $settings->primary_hover_color ?? '#047857');

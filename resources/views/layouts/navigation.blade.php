@@ -3,15 +3,7 @@
         <div class="flex h-16 items-center justify-between">
 
             <!-- Left side -->
-            <div class="flex items-center gap-8">
-
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current" style="color: var(--color-primary);" :theme-settings="$themeSettings ?? null" />
-                    </a>
-                </div>
-
+            <div class="flex items-center gap-4">
                 <!-- Navigation Links -->
                 <div class="hidden items-center gap-2 sm:flex">
 
