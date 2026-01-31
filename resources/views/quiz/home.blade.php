@@ -46,11 +46,12 @@
                         {{ session('status') }}
                     </div>
                 @endif
-                <div class="flex flex-col gap-6 md:flex-row md:[dir=rtl]:flex-row-reverse md:items-center md:justify-between">
-                    <div class="flex shrink-0 justify-end">
+                <div class="grid gap-8 items-center md:grid-cols-[auto_1fr_minmax(420px,520px)] md:[dir=rtl]:grid-cols-[minmax(420px,520px)_1fr_auto]">
+                    <div class="shrink-0 flex justify-start md:justify-start md:[dir=rtl]:justify-end">
                         <x-application-logo :home="true" />
                     </div>
-                    <div class="max-w-2xl">
+                    <div aria-hidden="true"></div>
+                    <div class="max-w-xl">
                         <p class="text-xs uppercase tracking-[0.4em] text-amber-500">{{ text('home.overline', 'Ramazan Daily Quiz Portal') }}</p>
                         <h1 class="mt-4 text-3xl font-semibold text-theme sm:text-4xl">{{ text('home.title', "Welcome to today's learning journey.") }}</h1>
                         <p class="mt-3 text-sm text-muted sm:text-base">
