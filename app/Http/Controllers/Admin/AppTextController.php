@@ -103,6 +103,9 @@ class AppTextController extends Controller
             'texts' => ['required', 'array'],
             'texts.*.value' => ['nullable', 'string'],
             'texts.*.font_id' => ['nullable', 'integer', 'exists:fonts,id'],
+            'texts.*.font_size' => ['nullable', 'string', 'max:32'],
+            'texts.*.text_color' => ['nullable', 'string', 'max:16'],
+            'texts.*.text_color_clear' => ['nullable', 'boolean'],
         ]);
 
         $submittedTexts = $validated['texts'];
@@ -122,14 +125,30 @@ class AppTextController extends Controller
             $fontId = $payload['font_id'] ?? null;
             $fontId = $fontId === '' ? null : $fontId;
             $fontId = $fontId !== null ? (int) $fontId : null;
+            $fontSize = $payload['font_size'] ?? null;
+            $fontSize = $fontSize === '' ? null : $fontSize;
+            $textColor = $payload['text_color'] ?? null;
+            $textColor = $textColor === '' ? null : $textColor;
+            $shouldClearColor = ! empty($payload['text_color_clear']);
 
-            if ($value === $text->value && $fontId === $text->font_id) {
+            if ($shouldClearColor) {
+                $textColor = null;
+            }
+
+            if (
+                $value === $text->value
+                && $fontId === $text->font_id
+                && $fontSize === $text->font_size
+                && $textColor === $text->text_color
+            ) {
                 continue;
             }
 
             $text->update([
                 'value' => $value,
                 'font_id' => $fontId,
+                'font_size' => $fontSize,
+                'text_color' => $textColor,
             ]);
 
             $this->forgetCache($text->key, $text->locale);

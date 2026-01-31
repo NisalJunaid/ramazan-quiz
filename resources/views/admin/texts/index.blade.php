@@ -163,7 +163,7 @@
                                             <th class="px-4 py-3">{{ text('admin.texts.table.key', 'Key') }}</th>
                                             <th class="px-4 py-3">{{ text('admin.texts.table.locale', 'Locale') }}</th>
                                             <th class="px-4 py-3">{{ text('admin.texts.table.value', 'Value') }}</th>
-                                            <th class="px-4 py-3">{{ text('admin.texts.table.font', 'Font') }}</th>
+                                            <th class="px-4 py-3">{{ text('admin.texts.table.font', 'Font / Size / Color') }}</th>
                                             <th class="px-4 py-3">{{ text('admin.texts.table.fallback', 'Fallback') }}</th>
                                             <th class="px-4 py-3">{{ text('admin.texts.table.actions', 'Actions') }}</th>
                                         </tr>
@@ -186,27 +186,61 @@
                                                     >
                                                 </td>
                                                 <td class="px-4 py-3">
-                                                    <div class="flex items-center gap-2">
-                                                        <select
-                                                            class="h-9 w-full rounded-xl border-gray-300 px-3 text-xs focus:border-emerald-500 focus:ring-emerald-500 {{ $text->font?->css_class }}"
-                                                            name="texts[{{ $text->id }}][font_id]"
+                                                    <div class="flex flex-wrap items-center gap-2">
+                                                        <div class="flex items-center gap-2">
+                                                            <select
+                                                                class="h-9 w-44 rounded-xl border-gray-300 px-3 text-xs focus:border-emerald-500 focus:ring-emerald-500 {{ $text->font?->css_class }}"
+                                                                name="texts[{{ $text->id }}][font_id]"
+                                                            >
+                                                                <option value="">{{ text('admin.texts.table.font_default', 'Default') }}</option>
+                                                                @foreach ($fonts as $font)
+                                                                    <option
+                                                                        value="{{ $font->id }}"
+                                                                        {{ $text->font_id === $font->id ? 'selected' : '' }}
+                                                                    >
+                                                                        {{ $font->name }}
+                                                                        @if ($isRtl && ! $font->is_rtl_optimized)
+                                                                            ({{ text('admin.texts.table.font_not_rtl', 'Not RTL') }})
+                                                                        @endif
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                            @if ($text->font)
+                                                                <span class="text-xs text-gray-500 {{ $text->font->css_class }}">Aa</span>
+                                                            @endif
+                                                        </div>
+                                                        <input
+                                                            class="h-9 w-24 rounded-xl border-gray-300 px-3 text-xs focus:border-emerald-500 focus:ring-emerald-500"
+                                                            type="text"
+                                                            name="texts[{{ $text->id }}][font_size]"
+                                                            placeholder="{{ text('admin.texts.table.font_size_placeholder', 'inherit') }}"
+                                                            value="{{ $text->font_size }}"
+                                                            title="{{ text('admin.texts.table.font_size_help', 'Examples: 14px, 1rem, clamp(1rem,2vw,1.5rem)') }}"
                                                         >
-                                                            <option value="">{{ text('admin.texts.table.font_default', 'Default') }}</option>
-                                                            @foreach ($fonts as $font)
-                                                                <option
-                                                                    value="{{ $font->id }}"
-                                                                    {{ $text->font_id === $font->id ? 'selected' : '' }}
+                                                        <div class="flex flex-wrap items-center gap-2">
+                                                            <input
+                                                                class="h-9 w-10 rounded border border-gray-300 p-0"
+                                                                type="color"
+                                                                name="texts[{{ $text->id }}][text_color]"
+                                                                value="{{ $text->text_color ?? '#000000' }}"
+                                                            >
+                                                            <input
+                                                                class="h-9 w-20 rounded-xl border-gray-200 bg-gray-50 px-2 text-xs text-gray-500"
+                                                                type="text"
+                                                                value="{{ $text->text_color ?? text('admin.texts.table.color_inherit', 'inherit') }}"
+                                                                readonly
+                                                            >
+                                                            <label class="flex items-center gap-1 text-xs text-gray-500">
+                                                                <input
+                                                                    class="h-3 w-3 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                                                                    type="checkbox"
+                                                                    name="texts[{{ $text->id }}][text_color_clear]"
+                                                                    value="1"
+                                                                    {{ $text->text_color ? '' : 'checked' }}
                                                                 >
-                                                                    {{ $font->name }}
-                                                                    @if ($isRtl && ! $font->is_rtl_optimized)
-                                                                        ({{ text('admin.texts.table.font_not_rtl', 'Not RTL') }})
-                                                                    @endif
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                        @if ($text->font)
-                                                            <span class="text-xs text-gray-500 {{ $text->font->css_class }}">Aa</span>
-                                                        @endif
+                                                                {{ text('admin.texts.table.color_clear', 'Clear') }}
+                                                            </label>
+                                                        </div>
                                                     </div>
                                                     @if ($isRtl && $text->font && ! $text->font->is_rtl_optimized)
                                                         <p class="mt-1 text-xs text-amber-600">
