@@ -17,11 +17,11 @@ class AttemptController extends Controller
     {
         $user = $request->user();
         if (! $user || $attempt->user_id !== $user->id) {
-            return redirect('/quiz/today')->with('status', 'Unauthorized');
+            return redirect('/quiz/today')->with('status', text('quiz.status.unauthorized', 'Unauthorized'));
         }
 
         if ($attempt->status !== 'in_progress') {
-            return redirect('/quiz/today')->with('status', 'Attempt not in progress');
+            return redirect('/quiz/today')->with('status', text('quiz.status.not_in_progress', 'Attempt not in progress'));
         }
 
         $quizDay = QuizDay::query()
@@ -33,7 +33,7 @@ class AttemptController extends Controller
             ->find($attempt->quiz_day_id);
 
         if (! $quizDay) {
-            return redirect('/quiz/today')->with('status', 'Quiz not available');
+            return redirect('/quiz/today')->with('status', text('quiz.status.not_available', 'Quiz not available'));
         }
 
         $now = Carbon::now();
@@ -42,12 +42,12 @@ class AttemptController extends Controller
         if ($now->greaterThan($expiresAt) || $now->greaterThan($allowedUntil)) {
             $attempt->update(['status' => 'expired']);
 
-            return redirect('/quiz/today')->with('status', 'Attempt expired');
+            return redirect('/quiz/today')->with('status', text('quiz.status.expired', 'Attempt expired'));
         }
 
         $question = $quizDay->question;
         if (! $question) {
-            return redirect('/quiz/today')->with('status', 'Quiz not available');
+            return redirect('/quiz/today')->with('status', text('quiz.status.not_available', 'Quiz not available'));
         }
 
         $submittedAnswers = $request->input('answers', []);
@@ -83,7 +83,7 @@ class AttemptController extends Controller
         event(new LeaderboardChanged($attempt->quiz_day_id));
 
         return redirect('/quiz/today')
-            ->with('status', 'Submitted')
+            ->with('status', text('quiz.status.submitted', 'Submitted'))
             ->with('score', $score);
     }
 }

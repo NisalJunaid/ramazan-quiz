@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .text-start {
+        text-align: start;
+    }
+
+    .text-end {
+        text-align: end;
+    }
+}

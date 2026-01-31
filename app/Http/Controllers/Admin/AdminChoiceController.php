@@ -29,7 +29,7 @@ class AdminChoiceController extends Controller
 
         if ($hasSubmittedAttempts) {
             return back()
-                ->withErrors(['question_id' => 'Cannot edit a quiz after users submit attempts.'])
+                ->withErrors(['question_id' => text('admin.choices.locked', 'Cannot edit a quiz after users submit attempts.')])
                 ->withInput();
         }
 
@@ -54,7 +54,7 @@ class AdminChoiceController extends Controller
 
         return redirect()
             ->route('admin.quizzes.days.edit', [$question->quizDay?->quiz_range_id, $question->quiz_day_id])
-            ->with('status', 'Choice added.');
+            ->with('status', text('admin.choices.added', 'Choice added.'));
     }
 
     public function update(Request $request, Choice $choice): RedirectResponse
@@ -73,7 +73,7 @@ class AdminChoiceController extends Controller
 
         if ($hasSubmittedAttempts) {
             return back()
-                ->withErrors(['choice_id' => 'Cannot edit a quiz after users submit attempts.'])
+                ->withErrors(['choice_id' => text('admin.choices.locked', 'Cannot edit a quiz after users submit attempts.')])
                 ->withInput();
         }
 
@@ -97,6 +97,6 @@ class AdminChoiceController extends Controller
 
         return redirect()
             ->route('admin.quizzes.days.edit', [$question->quizDay?->quiz_range_id, $question->quiz_day_id])
-            ->with('status', 'Choice updated.');
+            ->with('status', text('admin.choices.updated', 'Choice updated.'));
     }
 }

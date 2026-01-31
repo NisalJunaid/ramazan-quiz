@@ -28,7 +28,7 @@ class AdminQuestionController extends Controller
 
         if ($hasSubmittedAttempts) {
             return back()
-                ->withErrors(['quiz_day_id' => 'Cannot edit a quiz after users submit attempts.'])
+                ->withErrors(['quiz_day_id' => text('admin.questions.locked', 'Cannot edit a quiz after users submit attempts.')])
                 ->withInput();
         }
 
@@ -38,7 +38,7 @@ class AdminQuestionController extends Controller
 
         return redirect()
             ->route('admin.quizzes.index')
-            ->with('status', 'Question added.');
+            ->with('status', text('admin.questions.added', 'Question added.'));
     }
 
     public function update(Request $request, QuizDay $quizDay): RedirectResponse
@@ -55,7 +55,7 @@ class AdminQuestionController extends Controller
 
         if ($hasSubmittedAttempts) {
             return back()
-                ->withErrors(['quiz_day' => 'Cannot edit a quiz after users submit attempts.'])
+                ->withErrors(['quiz_day' => text('admin.questions.locked', 'Cannot edit a quiz after users submit attempts.')])
                 ->withInput();
         }
 
@@ -71,7 +71,7 @@ class AdminQuestionController extends Controller
 
         return redirect()
             ->route('admin.quizzes.days.edit', [$quizDay->quiz_range_id, $quizDay->id])
-            ->with('status', 'Question updated.');
+            ->with('status', text('admin.questions.updated', 'Question updated.'));
     }
 
     public function save(Request $request, QuizDay $quizDay): RedirectResponse
@@ -91,7 +91,7 @@ class AdminQuestionController extends Controller
 
         if ($hasSubmittedAttempts) {
             return back()
-                ->withErrors(['quiz_day' => 'Cannot edit a quiz after users submit attempts.'])
+                ->withErrors(['quiz_day' => text('admin.questions.locked', 'Cannot edit a quiz after users submit attempts.')])
                 ->withInput();
         }
 
@@ -123,6 +123,6 @@ class AdminQuestionController extends Controller
 
         event(new QuizDayChanged($quizDay->id, $quizDay->quiz_date));
 
-        return back()->with('status', 'Question and answers saved.');
+        return back()->with('status', text('admin.questions.saved', 'Question and answers saved.'));
     }
 }
