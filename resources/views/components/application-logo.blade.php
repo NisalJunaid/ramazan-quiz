@@ -1,13 +1,23 @@
-@props(['themeSettings' => null])
+@props(['themeSettings' => null, 'home' => false])
 
 @php
     $logoUrl = $themeSettings?->app_logo
-        ? asset('storage/' . $themeSettings->app_logo)
+        ? \Illuminate\Support\Facades\Storage::disk('public')->url($themeSettings->app_logo)
         : null;
-    $widthValue = $themeSettings?->logo_width;
-    $widthUnit = $themeSettings?->logo_width_unit ?? 'px';
-    $heightValue = $themeSettings?->logo_height;
-    $heightUnit = $themeSettings?->logo_height_unit ?? $widthUnit;
+    $defaultWidthUnit = $themeSettings?->logo_width_unit ?? 'px';
+    $defaultHeightUnit = $themeSettings?->logo_height_unit ?? $defaultWidthUnit;
+
+    if ($home) {
+        $widthValue = $themeSettings?->home_logo_width ?? $themeSettings?->logo_width;
+        $widthUnit = $themeSettings?->home_logo_width_unit ?? $defaultWidthUnit;
+        $heightValue = $themeSettings?->home_logo_height ?? $themeSettings?->logo_height;
+        $heightUnit = $themeSettings?->home_logo_height_unit ?? $defaultHeightUnit;
+    } else {
+        $widthValue = $themeSettings?->logo_width;
+        $widthUnit = $defaultWidthUnit;
+        $heightValue = $themeSettings?->logo_height;
+        $heightUnit = $defaultHeightUnit;
+    }
     $styleParts = [];
 
     if ($widthValue) {

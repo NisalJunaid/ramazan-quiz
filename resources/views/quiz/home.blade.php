@@ -8,30 +8,35 @@
                     {{ session('status') }}
                 </div>
             @endif
-            <div class="max-w-2xl">
-                <p class="text-xs uppercase tracking-[0.4em] text-amber-500">{{ text('home.overline', 'Ramazan Daily Quiz Portal') }}</p>
-                <h1 class="mt-4 text-3xl font-semibold text-theme sm:text-4xl">{{ text('home.title', "Welcome to today's learning journey.") }}</h1>
-                <p class="mt-3 text-sm text-muted sm:text-base">
-                    {{ text('home.subtitle', 'Join the daily quiz to test your knowledge and see how you rank alongside the community.') }}
-                </p>
-                <div class="mt-6 flex flex-wrap gap-3">
-                    @auth
-                        <a class="btn-primary inline-flex items-center justify-center px-5 py-2 text-sm font-semibold shadow-sm" href="{{ route('quiz.today') }}">
-                            {{ text('home.cta.start_quiz', "Start Today's Quiz") }}
-                        </a>
-                        @if ($canViewLeaderboard)
-                            <a class="btn-outline inline-flex items-center justify-center px-5 py-2 text-sm font-semibold" href="{{ route('leaderboard') }}">
-                                {{ text('home.cta.view_leaderboard', 'View Leaderboard') }}
+            <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                <div class="order-2 flex shrink-0 justify-end md:order-2">
+                    <x-application-logo :theme-settings="$themeSettings" :home="true" class="w-auto max-w-full" />
+                </div>
+                <div class="order-1 max-w-2xl md:order-1">
+                    <p class="text-xs uppercase tracking-[0.4em] text-amber-500">{{ text('home.overline', 'Ramazan Daily Quiz Portal') }}</p>
+                    <h1 class="mt-4 text-3xl font-semibold text-theme sm:text-4xl">{{ text('home.title', "Welcome to today's learning journey.") }}</h1>
+                    <p class="mt-3 text-sm text-muted sm:text-base">
+                        {{ text('home.subtitle', 'Join the daily quiz to test your knowledge and see how you rank alongside the community.') }}
+                    </p>
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        @auth
+                            <a class="btn-primary inline-flex items-center justify-center px-5 py-2 text-sm font-semibold shadow-sm" href="{{ route('quiz.today') }}">
+                                {{ text('home.cta.start_quiz', "Start Today's Quiz") }}
                             </a>
-                        @endif
-                    @else
-                        <a class="btn-primary inline-flex items-center justify-center px-5 py-2 text-sm font-semibold shadow-sm" href="{{ route('login') }}">
-                            {{ text('home.cta.login', 'Login to Start') }}
-                        </a>
-                        <a class="btn-outline inline-flex items-center justify-center px-5 py-2 text-sm font-semibold" href="{{ route('register') }}">
-                            {{ text('home.cta.register', 'Create an Account') }}
-                        </a>
-                    @endauth
+                            @if ($canViewLeaderboard)
+                                <a class="btn-outline inline-flex items-center justify-center px-5 py-2 text-sm font-semibold" href="{{ route('leaderboard') }}">
+                                    {{ text('home.cta.view_leaderboard', 'View Leaderboard') }}
+                                </a>
+                            @endif
+                        @else
+                            <a class="btn-primary inline-flex items-center justify-center px-5 py-2 text-sm font-semibold shadow-sm" href="{{ route('login') }}">
+                                {{ text('home.cta.login', 'Login to Start') }}
+                            </a>
+                            <a class="btn-outline inline-flex items-center justify-center px-5 py-2 text-sm font-semibold" href="{{ route('register') }}">
+                                {{ text('home.cta.register', 'Create an Account') }}
+                            </a>
+                        @endauth
+                    </div>
                 </div>
             </div>
         </section>

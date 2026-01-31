@@ -16,6 +16,10 @@ class Setting extends Model
         'logo_width_unit',
         'logo_height',
         'logo_height_unit',
+        'home_logo_width',
+        'home_logo_width_unit',
+        'home_logo_height',
+        'home_logo_height_unit',
         'primary_color',
         'primary_hover_color',
         'accent_color',
@@ -34,6 +38,8 @@ class Setting extends Model
         'is_rtl' => 'boolean',
         'logo_width' => 'float',
         'logo_height' => 'float',
+        'home_logo_width' => 'float',
+        'home_logo_height' => 'float',
         'body_background_overlay_opacity' => 'float',
     ];
 
