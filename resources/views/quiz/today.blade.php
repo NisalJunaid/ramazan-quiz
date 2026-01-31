@@ -4,36 +4,36 @@
     <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 sm:px-6 lg:px-8" data-quiz-page>
         <header class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-semibold text-emerald-700">{{ text('quiz.today.title', "Today's Quiz") }}</h1>
-                <p class="mt-1 text-sm text-gray-600">{{ text('quiz.today.subtitle', 'Complete one attempt before the window closes.') }}</p>
+                <h1 class="text-2xl font-semibold text-theme">{{ text('quiz.today.title', "Today's Quiz") }}</h1>
+                <p class="mt-1 text-sm text-muted">{{ text('quiz.today.subtitle', 'Complete one attempt before the window closes.') }}</p>
             </div>
             @if ($canViewLeaderboard)
-                <a class="text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('leaderboard') }}">
+                <a class="text-sm font-semibold text-theme" href="{{ route('leaderboard') }}">
                     {{ text('quiz.today.view_leaderboard', 'View leaderboard') }}
                 </a>
             @endif
         </header>
 
         @if (session('status'))
-            <div class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            <div class="rounded-2xl border px-4 py-3 text-sm" style="border-color: var(--color-ring); background: var(--color-surface-tint); color: var(--color-primary);">
                 {{ session('status') }}
             </div>
         @endif
 
         @if (!$quizDay)
-            <div class="rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-center text-sm text-gray-600">
+            <div class="card p-6 text-center text-sm text-muted">
                 {{ text('quiz.today.empty', 'No active quiz right now. Please check back later.') }}
             </div>
         @else
             @if ($activeQuizRanges->count() > 1)
-                <div class="rounded-2xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
-                    <div class="flex flex-wrap items-center gap-3 text-sm text-gray-700">
+                <div class="card px-4 py-3 shadow-sm">
+                    <div class="flex flex-wrap items-center gap-3 text-sm text-theme">
                         <span class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">{{ text('quiz.today.active_range', 'Active Quiz') }}</span>
                         <div class="flex items-center gap-2">
                             <label class="sr-only" for="quiz-range-selector">{{ text('quiz.today.select_range', 'Select quiz range') }}</label>
                             <select
                                 id="quiz-range-selector"
-                                class="rounded-full border-gray-300 pe-8 text-sm font-semibold text-gray-800 focus:border-emerald-500 focus:ring-emerald-500"
+                                class="input rounded-full pe-8 text-sm font-semibold text-theme"
                                 onchange="window.location.href='{{ route('quiz.today') }}?quiz_range_id=' + this.value"
                             >
                                 @foreach ($activeQuizRanges as $quizRange)
@@ -51,14 +51,14 @@
                 data-progress-score
                 class="{{ $isAttemptActive ? 'hidden' : '' }} grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]"
             >
-                <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                <div class="card p-6 shadow-sm">
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">{{ text('quiz.today.progress.overline', 'Quiz Progress') }}</p>
-                            <h2 class="mt-2 text-lg font-semibold text-gray-900">
+                            <h2 class="mt-2 text-lg font-semibold text-theme">
                                 {{ $selectedQuizRange?->title ?? $quizDay->quizRange?->title ?? text('quiz.today.progress.fallback', 'Ramazan Quiz') }}
                             </h2>
-                            <p class="mt-2 text-sm text-gray-600">
+                            <p class="mt-2 text-sm text-muted">
                                 @if ($currentDayNumber)
                                     {{ str_replace([':current', ':total'], [$currentDayNumber, $totalDays], text('quiz.today.progress.day_of', 'Day :current of :total')) }}
                                 @else
@@ -66,7 +66,7 @@
                                 @endif
                             </p>
                         </div>
-                        <div class="rounded-xl bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700">
+                        <div class="rounded-xl px-4 py-2 text-xs font-semibold" style="background: var(--color-surface-tint); color: var(--color-primary);">
                             {{ str_replace(':total', $totalDays, text('quiz.today.progress.total_label', 'Total Days: :total')) }}
                         </div>
                     </div>
@@ -87,11 +87,11 @@
                                 {{ $day['label'] }}
                             </div>
                         @empty
-                            <p class="text-sm text-gray-600">{{ text('quiz.today.progress.none', 'No quiz days available.') }}</p>
+                            <p class="text-sm text-muted">{{ text('quiz.today.progress.none', 'No quiz days available.') }}</p>
                         @endforelse
                     </div>
 
-                    <div class="mt-4 flex flex-wrap gap-4 text-xs text-gray-600">
+                    <div class="mt-4 flex flex-wrap gap-4 text-xs text-muted">
                         <span class="flex items-center gap-2">
                             <span class="h-2 w-2 rounded-full bg-emerald-500"></span> {{ text('quiz.today.progress.correct', '✓ Correct') }}
                         </span>
@@ -107,11 +107,11 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                <div class="card p-6 shadow-sm">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">{{ text('quiz.today.score.title', 'Score Summary') }}</p>
                     <div class="mt-4">
-                        <p class="text-3xl font-semibold text-gray-900">{{ $currentScore }}</p>
-                        <p class="mt-1 text-sm text-gray-600">
+                        <p class="text-3xl font-semibold text-theme">{{ $currentScore }}</p>
+                        <p class="mt-1 text-sm text-muted">
                             {{ text('quiz.today.score.current', 'Current Score') }}
                             @if ($maxPossibleScore)
                                 <span class="text-gray-400">/ {{ $maxPossibleScore }}</span>
@@ -139,15 +139,15 @@
                 </div>
             </section>
 
-            <section class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+            <section class="card p-6 shadow-sm">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">{{ text('quiz.today.question.overline', "Today's Question") }}</p>
-                        <h2 class="mt-2 text-xl font-semibold text-gray-900">{{ $quizDay->title }}</h2>
-                        <p class="mt-2 text-sm text-gray-600">{{ $quizDay->start_at }} → {{ $quizDay->end_at }}</p>
+                        <h2 class="mt-2 text-xl font-semibold text-theme">{{ $quizDay->title }}</h2>
+                        <p class="mt-2 text-sm text-muted">{{ $quizDay->start_at }} → {{ $quizDay->end_at }}</p>
                     </div>
                     <div class="flex w-full flex-col gap-3 sm:w-auto">
-                        <div class="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                        <div class="rounded-xl px-4 py-3 text-sm" style="background: var(--color-surface-tint); color: var(--color-primary);">
                             {{ str_replace(':seconds', $quizDay->duration_seconds, text('quiz.today.duration', 'Duration: :seconds sec')) }}
                         </div>
                         @if ($attempt && $attempt->status === 'submitted')
@@ -160,14 +160,14 @@
                 </div>
 
                 @if (!$attempt)
-                    <div class="mt-6 rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/40 px-6 py-6 text-sm text-gray-700">
-                        <p class="text-base font-semibold text-gray-900">{{ text('quiz.today.prompt.title', "Ready for today's question?") }}</p>
-                        <p class="mt-2 text-sm text-gray-600">
+                    <div class="mt-6 rounded-2xl border border-dashed px-6 py-6 text-sm text-theme" style="border-color: var(--color-ring); background: var(--color-surface-tint);">
+                        <p class="text-base font-semibold text-theme">{{ text('quiz.today.prompt.title', "Ready for today's question?") }}</p>
+                        <p class="mt-2 text-sm text-muted">
                             {{ text('quiz.today.prompt.subtitle', 'Start your attempt to unlock the question and begin the timer.') }}
                         </p>
                         <form class="mt-4" method="POST" action="{{ route('quiz.start', $quizDay) }}">
                             @csrf
-                            <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">
+                            <button class="btn-primary inline-flex items-center justify-center px-6 py-2 text-sm font-semibold shadow-sm" type="submit">
                                 {{ text('quiz.today.start', 'Start Quiz') }}
                             </button>
                         </form>
@@ -177,42 +177,45 @@
                         $formattedRemaining = gmdate('i:s', $remainingSeconds);
                     @endphp
                     <div
-                        class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-4"
+                        class="mt-6 rounded-2xl border px-4 py-4"
+                        style="border-color: var(--color-ring); background: var(--color-surface-tint);"
                         data-quiz-timer
                         data-duration-seconds="{{ $quizDay->duration_seconds }}"
                         data-remaining-seconds="{{ $remainingSeconds }}"
                     >
-                        <div class="flex items-center justify-between text-sm font-semibold text-emerald-800">
+                        <div class="flex items-center justify-between text-sm font-semibold" style="color: var(--color-primary);">
                             <span>{{ text('quiz.today.timer.label', 'Time remaining') }}</span>
                             <span data-quiz-timer-text class="tabular-nums">{{ $formattedRemaining }}</span>
                         </div>
-                        <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-emerald-100">
+                        <div class="mt-3 h-2 w-full overflow-hidden rounded-full" style="background: rgba(5, 150, 105, 0.15);">
                             <div
-                                class="h-full w-full origin-left rounded-full bg-emerald-500 transition-transform duration-500 ease-linear ltr:origin-left rtl:origin-right"
+                                class="h-full w-full origin-left rounded-full transition-transform duration-500 ease-linear ltr:origin-left rtl:origin-right"
+                                style="background: var(--color-primary);"
                                 data-quiz-timer-bar
                             ></div>
                         </div>
                     </div>
 
                     @if (! $question)
-                        <p class="mt-4 text-sm text-gray-600">{{ text('quiz.today.question.none', 'No questions available.') }}</p>
+                        <p class="mt-4 text-sm text-muted">{{ text('quiz.today.question.none', 'No questions available.') }}</p>
                     @else
                         <form id="quiz-attempt-form" class="mt-6 space-y-5" method="POST" action="{{ route('attempt.submit', $attempt) }}">
                             @csrf
-                            <div class="rounded-2xl border border-gray-200 bg-gray-50/60 p-5">
+                            <div class="card p-5">
                                 <div class="flex flex-wrap items-center justify-between gap-3">
-                                    <p class="text-sm font-semibold text-gray-800">
+                                    <p class="text-sm font-semibold text-theme">
                                         {{ $question->order_index }}. {{ $question->question_text }}
                                     </p>
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-muted">
                                         {{ str_replace(':points', $question->points, text('quiz.today.question.points', ':points pts')) }}
                                     </span>
                                 </div>
                                 <div class="mt-4 grid gap-3">
                                     @foreach ($question->choices as $choice)
-                                        <label class="flex cursor-pointer items-start gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-4 text-sm text-gray-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50/40">
+                                        <label class="choice-card flex cursor-pointer items-start gap-3 px-4 py-4 text-sm text-theme shadow-sm transition">
                                             <input
-                                                class="mt-1 h-4 w-4 text-emerald-600"
+                                                class="mt-1 h-4 w-4"
+                                                style="accent-color: var(--color-primary);"
                                                 type="radio"
                                                 name="answers[{{ $question->id }}]"
                                                 value="{{ $choice->id }}"
@@ -222,7 +225,7 @@
                                     @endforeach
                                 </div>
                             </div>
-                            <button class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" type="submit">
+                            <button class="btn-primary inline-flex items-center justify-center px-6 py-2 text-sm font-semibold shadow-sm" type="submit">
                                 {{ text('quiz.today.submit', 'Submit Answers') }}
                             </button>
                         </form>

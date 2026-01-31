@@ -15,6 +15,18 @@ class Setting extends Model
         'logo_width_unit',
         'logo_height',
         'logo_height_unit',
+        'primary_color',
+        'primary_hover_color',
+        'accent_color',
+        'surface_color',
+        'surface_tint',
+        'text_color',
+        'muted_text_color',
+        'border_color',
+        'ring_color',
+        'button_radius',
+        'card_radius',
+        'focus_ring_color',
     ];
 
     protected $casts = [

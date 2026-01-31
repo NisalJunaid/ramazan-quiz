@@ -8,7 +8,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('home') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-emerald-700" :theme-settings="$themeSettings ?? null" />
+                        <x-application-logo class="block h-9 w-auto fill-current" style="color: var(--color-primary);" :theme-settings="$themeSettings ?? null" />
                     </a>
                 </div>
 
@@ -81,7 +81,7 @@
                         </x-nav-link>
                         <a
                             href="{{ route('register') }}"
-                            class="inline-flex items-center px-4 py-2 bg-emerald-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-emerald-700 focus:bg-emerald-700 active:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            class="btn-primary inline-flex items-center px-4 py-2 border border-transparent font-semibold text-xs uppercase tracking-widest transition ease-in-out duration-150">
                             {{ text('navigation.register', 'Register') }}
                         </a>
                     </div>

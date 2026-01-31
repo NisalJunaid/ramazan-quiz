@@ -5,23 +5,23 @@
         <header class="flex flex-wrap items-start justify-between gap-4">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500">{{ text('admin.theme.overline', 'Appearance') }}</p>
-                <h1 class="mt-2 text-2xl font-semibold text-emerald-700">{{ text('admin.theme.title', 'Theme Settings') }}</h1>
-                <p class="mt-2 text-sm text-gray-600">{{ text('admin.theme.subtitle', 'Control the global background and logo used across the app.') }}</p>
+                <h1 class="mt-2 text-2xl font-semibold text-theme">{{ text('admin.theme.title', 'Theme Settings') }}</h1>
+                <p class="mt-2 text-sm text-muted">{{ text('admin.theme.subtitle', 'Control the global background and logo used across the app.') }}</p>
             </div>
-            <a class="text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('admin.index') }}">
+            <a class="text-sm font-semibold text-theme hover:text-theme" href="{{ route('admin.index') }}">
                 {{ text('admin.theme.back', 'Back to Admin') }}
             </a>
         </header>
 
         @if (session('status'))
-            <div class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            <div class="rounded-2xl border px-4 py-3 text-sm" style="border-color: var(--color-ring); background: var(--color-surface-tint); color: var(--color-primary);">
                 {{ session('status') }}
             </div>
         @endif
 
-        <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">{{ text('admin.theme.form.title', 'Global appearance settings') }}</h2>
-            <p class="mt-2 text-sm text-gray-600">{{ text('admin.theme.form.helper', 'Upload images and adjust sizing to update the look everywhere.') }}</p>
+        <section class="card p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-theme">{{ text('admin.theme.form.title', 'Global appearance settings') }}</h2>
+            <p class="mt-2 text-sm text-muted">{{ text('admin.theme.form.helper', 'Upload images and adjust sizing to update the look everywhere.') }}</p>
 
             <form class="mt-6 grid gap-6" method="POST" action="{{ route('admin.theme.update') }}" enctype="multipart/form-data">
                 @csrf
@@ -29,32 +29,32 @@
 
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>
-                        <label class="text-xs font-semibold uppercase tracking-wide text-gray-500" for="body-background-image">
+                        <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="body-background-image">
                             {{ text('admin.theme.background.image', 'Body background image') }}
                         </label>
                         <input
                             id="body-background-image"
-                            class="mt-1 w-full rounded-xl border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                            class="input mt-1 w-full px-3 py-2 text-sm"
                             type="file"
                             name="body_background_image"
                             accept="image/png,image/jpeg,image/webp"
                         >
-                        <p class="mt-1 text-xs text-gray-500">
+                        <p class="mt-1 text-xs text-muted">
                             {{ text('admin.theme.background.image_hint', 'PNG, JPG, or WEBP up to 2MB.') }}
                         </p>
                         @if ($settings->body_background_image)
-                            <p class="mt-2 text-xs text-gray-500">
+                            <p class="mt-2 text-xs text-muted">
                                 {{ text('admin.theme.background.current', 'Current background image uploaded.') }}
                             </p>
                         @endif
                     </div>
                     <div>
-                        <label class="text-xs font-semibold uppercase tracking-wide text-gray-500" for="body-background-fit">
+                        <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="body-background-fit">
                             {{ text('admin.theme.background.fit', 'Background fit') }}
                         </label>
                         <select
                             id="body-background-fit"
-                            class="mt-1 w-full rounded-xl border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                            class="input mt-1 w-full px-3 py-2 text-sm"
                             name="body_background_fit"
                             required
                         >
@@ -70,33 +70,33 @@
 
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>
-                        <label class="text-xs font-semibold uppercase tracking-wide text-gray-500" for="app-logo">
+                        <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="app-logo">
                             {{ text('admin.theme.logo.image', 'App logo image') }}
                         </label>
                         <input
                             id="app-logo"
-                            class="mt-1 w-full rounded-xl border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                            class="input mt-1 w-full px-3 py-2 text-sm"
                             type="file"
                             name="app_logo"
                             accept="image/png,image/jpeg,image/webp"
                         >
-                        <p class="mt-1 text-xs text-gray-500">
+                        <p class="mt-1 text-xs text-muted">
                             {{ text('admin.theme.logo.image_hint', 'PNG, JPG, or WEBP up to 2MB.') }}
                         </p>
                         @if ($settings->app_logo)
-                            <p class="mt-2 text-xs text-gray-500">
+                            <p class="mt-2 text-xs text-muted">
                                 {{ text('admin.theme.logo.current', 'Current logo uploaded.') }}
                             </p>
                         @endif
                     </div>
                     <div class="grid gap-4 md:grid-cols-2">
                         <div>
-                            <label class="text-xs font-semibold uppercase tracking-wide text-gray-500" for="logo-width">
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="logo-width">
                                 {{ text('admin.theme.logo.width', 'Logo width') }}
                             </label>
                             <input
                                 id="logo-width"
-                                class="mt-1 w-full rounded-xl border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
                                 type="number"
                                 name="logo_width"
                                 step="0.1"
@@ -105,12 +105,12 @@
                             >
                         </div>
                         <div>
-                            <label class="text-xs font-semibold uppercase tracking-wide text-gray-500" for="logo-width-unit">
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="logo-width-unit">
                                 {{ text('admin.theme.logo.width_unit', 'Width unit') }}
                             </label>
                             <select
                                 id="logo-width-unit"
-                                class="mt-1 w-full rounded-xl border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
                                 name="logo_width_unit"
                                 required
                             >
@@ -124,12 +124,12 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-xs font-semibold uppercase tracking-wide text-gray-500" for="logo-height">
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="logo-height">
                                 {{ text('admin.theme.logo.height', 'Logo height (optional)') }}
                             </label>
                             <input
                                 id="logo-height"
-                                class="mt-1 w-full rounded-xl border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
                                 type="number"
                                 name="logo_height"
                                 step="0.1"
@@ -138,12 +138,12 @@
                             >
                         </div>
                         <div>
-                            <label class="text-xs font-semibold uppercase tracking-wide text-gray-500" for="logo-height-unit">
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="logo-height-unit">
                                 {{ text('admin.theme.logo.height_unit', 'Height unit') }}
                             </label>
                             <select
                                 id="logo-height-unit"
-                                class="mt-1 w-full rounded-xl border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
                                 name="logo_height_unit"
                             >
                                 @php
@@ -159,7 +159,140 @@
                     </div>
                 </div>
 
-                <button class="inline-flex items-center rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700" type="submit">
+                <div class="grid gap-4 rounded-2xl border border-dashed p-4">
+                    @php
+                        $primaryColor = old('primary_color', $settings->primary_color ?? '#059669');
+                        $primaryHoverColor = old('primary_hover_color', $settings->primary_hover_color ?? '#047857');
+                        $accentColor = old('accent_color', $settings->accent_color ?? '#f59e0b');
+                        $textColor = old('text_color', $settings->text_color ?? '#111827');
+                        $borderColor = old('border_color', $settings->border_color ?? '#e5e7eb');
+
+                        if (! str_starts_with($borderColor, '#')) {
+                            $borderColor = '#e5e7eb';
+                        }
+                    @endphp
+                    <div>
+                        <h3 class="text-base font-semibold text-theme">{{ text('admin.theme.tokens.title', 'Theme design tokens') }}</h3>
+                        <p class="mt-1 text-sm text-muted">{{ text('admin.theme.tokens.helper', 'These values update global colors, borders, and radius styles across the UI.') }}</p>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="primary-color">
+                                {{ text('admin.theme.tokens.primary', 'Primary color') }}
+                            </label>
+                            <input
+                                id="primary-color"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="color"
+                                name="primary_color"
+                                value="{{ $primaryColor }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="primary-hover-color">
+                                {{ text('admin.theme.tokens.primary_hover', 'Primary hover color') }}
+                            </label>
+                            <input
+                                id="primary-hover-color"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="color"
+                                name="primary_hover_color"
+                                value="{{ $primaryHoverColor }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="accent-color">
+                                {{ text('admin.theme.tokens.accent', 'Accent color') }}
+                            </label>
+                            <input
+                                id="accent-color"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="color"
+                                name="accent_color"
+                                value="{{ $accentColor }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="text-color">
+                                {{ text('admin.theme.tokens.text', 'Primary text color') }}
+                            </label>
+                            <input
+                                id="text-color"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="color"
+                                name="text_color"
+                                value="{{ $textColor }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="border-color">
+                                {{ text('admin.theme.tokens.border', 'Border color') }}
+                            </label>
+                            <input
+                                id="border-color"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="color"
+                                name="border_color"
+                                value="{{ $borderColor }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="ring-color">
+                                {{ text('admin.theme.tokens.ring', 'Ring color (RGBA)') }}
+                            </label>
+                            <input
+                                id="ring-color"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="text"
+                                name="ring_color"
+                                value="{{ old('ring_color', $settings->ring_color ?? 'rgba(5,150,105,0.18)') }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="focus-ring-color">
+                                {{ text('admin.theme.tokens.focus_ring', 'Focus ring color (RGBA)') }}
+                            </label>
+                            <input
+                                id="focus-ring-color"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="text"
+                                name="focus_ring_color"
+                                value="{{ old('focus_ring_color', $settings->focus_ring_color ?? 'rgba(5,150,105,0.35)') }}"
+                            >
+                        </div>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="button-radius">
+                                {{ text('admin.theme.tokens.button_radius', 'Button radius') }}
+                            </label>
+                            <input
+                                id="button-radius"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="text"
+                                name="button_radius"
+                                placeholder="9999px"
+                                value="{{ old('button_radius', $settings->button_radius ?? '9999px') }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="card-radius">
+                                {{ text('admin.theme.tokens.card_radius', 'Card radius') }}
+                            </label>
+                            <input
+                                id="card-radius"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="text"
+                                name="card_radius"
+                                placeholder="24px"
+                                value="{{ old('card_radius', $settings->card_radius ?? '24px') }}"
+                            >
+                        </div>
+                    </div>
+                    <p class="text-xs text-muted">{{ text('admin.theme.tokens.note', 'Theme values update buttons, cards, borders, and focus states across the site.') }}</p>
+                </div>
+
+                <button class="btn-primary inline-flex items-center px-4 py-2 text-sm font-semibold" type="submit">
                     {{ text('admin.theme.save', 'Save Theme Settings') }}
                 </button>
             </form>
