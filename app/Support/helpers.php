@@ -1,35 +1,8 @@
 <?php
 
-use App\Models\AppText;
 use App\Models\Setting;
-use Illuminate\Support\Facades\Cache;
 
-if (! function_exists('text')) {
-    function text(string $key, string $fallback = '', ?string $locale = null): string
-    {
-        $locale = $locale ?: app()->getLocale();
-
-        $localizedValue = Cache::rememberForever("app_texts.{$locale}.{$key}", function () use ($key, $locale) {
-            return AppText::query()
-                ->where('key', $key)
-                ->where('locale', $locale)
-                ->value('value');
-        });
-
-        if ($localizedValue !== null) {
-            return $localizedValue;
-        }
-
-        $defaultValue = Cache::rememberForever("app_texts.default.{$key}", function () use ($key) {
-            return AppText::query()
-                ->where('key', $key)
-                ->whereNull('locale')
-                ->value('value');
-        });
-
-        return $defaultValue ?? $fallback;
-    }
-}
+// The text() helper now lives in app/Helpers/text.php for global autoloading.
 
 if (! function_exists('is_rtl')) {
     function is_rtl(): bool

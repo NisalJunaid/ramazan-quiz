@@ -10,14 +10,14 @@
             @endif
             <div class="max-w-2xl">
                 <p class="text-xs uppercase tracking-[0.4em] text-amber-500">{{ text('home.overline', 'Ramazan Daily Quiz Portal') }}</p>
-                <h1 class="mt-4 text-3xl font-semibold text-emerald-700 sm:text-4xl">{{ text('home.title', 'Welcome to today\\'s learning journey.') }}</h1>
+                <h1 class="mt-4 text-3xl font-semibold text-emerald-700 sm:text-4xl">{{ text('home.title', "Welcome to today's learning journey.") }}</h1>
                 <p class="mt-3 text-sm text-gray-600 sm:text-base">
                     {{ text('home.subtitle', 'Join the daily quiz to test your knowledge and see how you rank alongside the community.') }}
                 </p>
                 <div class="mt-6 flex flex-wrap gap-3">
                     @auth
                         <a class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700" href="{{ route('quiz.today') }}">
-                            {{ text('home.cta.start_quiz', 'Start Today\\'s Quiz') }}
+                            {{ text('home.cta.start_quiz', "Start Today's Quiz") }}
                         </a>
                         @if ($canViewLeaderboard)
                             <a class="inline-flex items-center justify-center rounded-full border border-emerald-600 px-5 py-2 text-sm font-semibold text-emerald-600 hover:bg-emerald-50" href="{{ route('leaderboard') }}">
@@ -38,7 +38,7 @@
 
         <section class="grid gap-6 lg:grid-cols-2">
             <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">{{ text('home.status.title', 'Today\\'s Quiz Status') }}</h2>
+                <h2 class="text-lg font-semibold text-gray-900">{{ text('home.status.title', "Today's Quiz Status") }}</h2>
                 @if ($quizDay)
                     <p class="mt-2 text-sm text-gray-600">
                         {{ $quizDay->title }} · {{ $quizDay->quiz_date }}
