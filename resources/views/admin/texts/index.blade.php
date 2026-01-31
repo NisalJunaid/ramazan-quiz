@@ -109,67 +109,121 @@
                 </div>
             </form>
 
-            <div class="mt-6 overflow-x-auto rounded-2xl border border-gray-200">
-                <table class="min-w-full text-sm">
-                    <thead class="border-b border-gray-200 text-start text-xs uppercase tracking-widest text-gray-500">
-                        <tr>
-                            <th class="px-4 py-3">{{ text('admin.texts.table.key', 'Key') }}</th>
-                            <th class="px-4 py-3">{{ text('admin.texts.table.locale', 'Locale') }}</th>
-                            <th class="px-4 py-3">{{ text('admin.texts.table.value', 'Value') }}</th>
-                            <th class="px-4 py-3">{{ text('admin.texts.table.fallback', 'Fallback') }}</th>
-                            <th class="px-4 py-3">{{ text('admin.texts.table.actions', 'Actions') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        @forelse ($texts as $text)
-                            <tr class="bg-white">
-                                <td class="px-4 py-3 font-semibold text-gray-900">
-                                    {{ $text->key }}
-                                </td>
-                                <td class="px-4 py-3 text-gray-600">
-                                    {{ $text->locale ?? text('admin.texts.table.default', 'Default') }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    <form id="text-form-{{ $text->id }}" method="POST" action="{{ route('admin.texts.update', $text) }}">
-                                        @csrf
-                                        @method('PUT')
-                                        <input
-                                            class="w-full rounded-xl border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
-                                            type="text"
-                                            name="value"
-                                            value="{{ $text->value }}"
-                                            required
-                                        >
-                                    </form>
-                                </td>
-                                <td class="px-4 py-3 text-gray-500">
-                                    {{ $text->locale ? ($fallbacks[$text->key] ?? text('admin.texts.table.none', 'None')) : text('admin.texts.table.primary', 'Primary') }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <button class="inline-flex items-center rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-700" type="submit" form="{{ 'text-form-' . $text->id }}">
-                                            {{ text('admin.texts.table.save', 'Save') }}
-                                        </button>
-                                        <form method="POST" action="{{ route('admin.texts.destroy', $text) }}" onsubmit="return confirm('{{ text('admin.texts.delete.confirm', 'Delete this text key?') }}')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="inline-flex items-center rounded-full border border-rose-300 px-3 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50" type="submit">
-                                                {{ text('admin.texts.table.delete', 'Delete') }}
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td class="px-4 py-6 text-center text-sm text-gray-500" colspan="5">
-                                    {{ text('admin.texts.table.empty', 'No text entries found.') }}
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+            <form
+                class="mt-6 space-y-6"
+                method="POST"
+                action="{{ route('admin.texts.bulkUpdate') }}"
+                onsubmit="const button = this.querySelector('[data-save-all]'); if (button) { button.disabled = true; button.classList.add('opacity-70','cursor-not-allowed'); button.querySelector('[data-label]').classList.add('hidden'); button.querySelector('[data-loading]').classList.remove('hidden'); }"
+            >
+                @csrf
+                <div class="sticky top-4 z-20 flex justify-end">
+                    <button
+                        class="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+                        data-save-all
+                        type="submit"
+                    >
+                        <span data-label>{{ text('admin.texts.bulk.save', 'Save All Changes') }}</span>
+                        <span class="hidden text-xs uppercase tracking-widest" data-loading>{{ text('admin.texts.bulk.saving', 'Saving...') }}</span>
+                    </button>
+                </div>
+
+                @forelse ($groupedTexts as $groupLabel => $groupTexts)
+                    @php
+                        $groupTitles = [
+                            'Home' => 'Home Page',
+                            'Quiz' => 'Quiz Page',
+                            'Leaderboard' => 'Leaderboard Page',
+                            'Admin' => 'Admin Panel',
+                            'General' => 'General',
+                        ];
+                    @endphp
+                    <details class="rounded-2xl border border-gray-200 bg-white shadow-sm" open>
+                        <summary class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl px-5 py-4 text-left">
+                            <div>
+                                <h3 class="text-base font-semibold text-gray-900">
+                                    {{ $groupTitles[$groupLabel] ?? $groupLabel }}
+                                </h3>
+                                <p class="text-xs text-gray-500">
+                                    {{ count($groupTexts) }} {{ text('admin.texts.group.count', 'keys') }}
+                                </p>
+                            </div>
+                            <span class="text-xs font-semibold uppercase tracking-widest text-emerald-600">
+                                {{ text('admin.texts.group.toggle', 'Toggle') }}
+                            </span>
+                        </summary>
+                        <div class="border-t border-gray-100 px-5 py-4">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full text-sm">
+                                    <thead class="border-b border-gray-200 text-start text-xs uppercase tracking-widest text-gray-500">
+                                        <tr>
+                                            <th class="px-4 py-3">{{ text('admin.texts.table.key', 'Key') }}</th>
+                                            <th class="px-4 py-3">{{ text('admin.texts.table.locale', 'Locale') }}</th>
+                                            <th class="px-4 py-3">{{ text('admin.texts.table.value', 'Value') }}</th>
+                                            <th class="px-4 py-3">{{ text('admin.texts.table.fallback', 'Fallback') }}</th>
+                                            <th class="px-4 py-3">{{ text('admin.texts.table.actions', 'Actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        @foreach ($groupTexts as $text)
+                                            <tr class="bg-white">
+                                                <td class="px-4 py-3 font-semibold text-gray-900">
+                                                    {{ $text->key }}
+                                                </td>
+                                                <td class="px-4 py-3 text-gray-600">
+                                                    {{ $text->locale ?? text('admin.texts.table.default', 'Default') }}
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <input
+                                                        class="w-full rounded-xl border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                                                        type="text"
+                                                        name="texts[{{ $text->id }}][value]"
+                                                        value="{{ $text->value }}"
+                                                    >
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <input
+                                                        class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"
+                                                        type="text"
+                                                        value="{{ $text->locale ? ($text->fallback ?? text('admin.texts.table.none', 'None')) : text('admin.texts.table.primary', 'Primary') }}"
+                                                        readonly
+                                                    >
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <button
+                                                        class="inline-flex items-center rounded-full border border-rose-300 px-3 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50"
+                                                        form="delete-text-{{ $text->id }}"
+                                                        type="submit"
+                                                    >
+                                                        {{ text('admin.texts.table.delete', 'Delete') }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </details>
+                @empty
+                    <div class="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-center text-sm text-gray-500">
+                        {{ text('admin.texts.table.empty', 'No text entries found.') }}
+                    </div>
+                @endforelse
+            </form>
+
+            @foreach ($groupedTexts as $groupTexts)
+                @foreach ($groupTexts as $text)
+                    <form
+                        id="delete-text-{{ $text->id }}"
+                        method="POST"
+                        action="{{ route('admin.texts.destroy', $text) }}"
+                        onsubmit="return confirm('{{ text('admin.texts.delete.confirm', 'Delete this text key?') }}')"
+                    >
+                        @csrf
+                        @method('DELETE')
+                    </form>
+                @endforeach
+            @endforeach
         </section>
     </div>
 @endsection
