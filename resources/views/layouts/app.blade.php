@@ -3,6 +3,24 @@
     $fontCollection = $fonts ?? collect();
     $googleFonts = $fontCollection->where('source_type', 'google');
     $uploadFonts = $fontCollection->where('source_type', 'upload');
+    $themeSettings = $themeSettings ?? null;
+    $bodyBackgroundUrl = $themeSettings?->body_background_image
+        ? asset('storage/' . $themeSettings->body_background_image)
+        : null;
+    $bodyBackgroundSize = match ($themeSettings?->body_background_fit) {
+        'contain' => 'contain',
+        'fill' => '100% 100%',
+        default => 'cover',
+    };
+    $bodyStyle = $bodyBackgroundUrl
+        ? "background-image: url('{$bodyBackgroundUrl}'); background-size: {$bodyBackgroundSize}; background-repeat: no-repeat; background-position: center center;"
+        : '';
+    $bodyClass = $bodyBackgroundUrl
+        ? 'font-sans antialiased text-gray-800'
+        : 'font-sans antialiased text-gray-800 bg-white';
+    $containerClass = $bodyBackgroundUrl
+        ? 'min-h-screen bg-white/90'
+        : 'min-h-screen bg-white';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}" class="{{ $isRtl ? 'rtl' : 'ltr' }}">
@@ -48,8 +66,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
 
-    <body class="font-sans antialiased text-gray-800 bg-white">
-        <div class="min-h-screen bg-white">
+    <body class="{{ $bodyClass }}" @if ($bodyStyle) style="{{ $bodyStyle }}" @endif>
+        <div class="{{ $containerClass }}">
 
             @include('layouts.navigation')
 

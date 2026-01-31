@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminQuestionController;
 use App\Http\Controllers\Admin\AdminChoiceController;
 use App\Http\Controllers\Admin\AppTextController;
 use App\Http\Controllers\Admin\FontController;
+use App\Http\Controllers\Admin\ThemeSettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,6 +126,13 @@ Route::middleware(['auth', 'admin'])
 
         Route::delete('/fonts/{font}', [FontController::class, 'destroy'])
             ->name('fonts.destroy');
+
+        // Theme settings
+        Route::get('/theme', [ThemeSettingsController::class, 'index'])
+            ->name('theme.index');
+
+        Route::put('/theme', [ThemeSettingsController::class, 'update'])
+            ->name('theme.update');
     });
 
 /*

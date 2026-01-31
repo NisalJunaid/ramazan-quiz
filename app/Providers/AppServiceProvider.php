@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Font;
 use App\Models\QuizDay;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -44,11 +45,15 @@ class AppServiceProvider extends ServiceProvider
             $fonts = Schema::hasTable('fonts')
                 ? Font::query()->orderBy('name')->get()
                 : collect();
+            $themeSettings = Schema::hasTable('settings')
+                ? Setting::current()
+                : null;
 
             $view->with([
                 'leaderboardIsPublic' => $leaderboardIsPublic,
                 'canViewLeaderboard' => $leaderboardIsPublic || $isAdmin,
                 'fonts' => $fonts,
+                'themeSettings' => $themeSettings,
             ]);
         });
     }
