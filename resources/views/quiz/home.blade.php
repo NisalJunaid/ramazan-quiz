@@ -8,7 +8,7 @@
                     {{ session('status') }}
                 </div>
             @endif
-            <div class="flex flex-col gap-6 md:flex-row rtl:md:flex-row-reverse md:items-center md:justify-between">
+            <div class="flex flex-col gap-6 md:flex-row md:[dir=rtl]:flex-row-reverse md:items-center md:justify-between">
                 <div class="flex shrink-0 justify-end">
                     <x-application-logo :home="true" />
                 </div>
