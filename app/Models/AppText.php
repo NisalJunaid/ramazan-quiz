@@ -10,5 +10,11 @@ class AppText extends Model
         'key',
         'value',
         'locale',
+        'font_id',
     ];
+
+    public function font()
+    {
+        return $this->belongsTo(Font::class);
+    }
 }

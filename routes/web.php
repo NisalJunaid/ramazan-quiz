@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminQuizController;
 use App\Http\Controllers\Admin\AdminQuestionController;
 use App\Http\Controllers\Admin\AdminChoiceController;
 use App\Http\Controllers\Admin\AppTextController;
+use App\Http\Controllers\Admin\FontController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,6 +115,16 @@ Route::middleware(['auth', 'admin'])
 
         Route::put('/settings/rtl', [AppTextController::class, 'updateSettings'])
             ->name('settings.rtl');
+
+        // Font management
+        Route::get('/fonts', [FontController::class, 'index'])
+            ->name('fonts.index');
+
+        Route::post('/fonts', [FontController::class, 'store'])
+            ->name('fonts.store');
+
+        Route::delete('/fonts/{font}', [FontController::class, 'destroy'])
+            ->name('fonts.destroy');
     });
 
 /*
