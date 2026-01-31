@@ -10,6 +10,7 @@ class Setting extends Model
         'is_rtl',
         'body_background_image',
         'body_background_fit',
+        'body_background_overlay_opacity',
         'app_logo',
         'logo_width',
         'logo_width_unit',
@@ -33,6 +34,7 @@ class Setting extends Model
         'is_rtl' => 'boolean',
         'logo_width' => 'float',
         'logo_height' => 'float',
+        'body_background_overlay_opacity' => 'float',
     ];
 
     public static function current(): self
