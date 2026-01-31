@@ -25,6 +25,7 @@ class ThemeSettingsController extends Controller
         $validated = $request->validate([
             'body_background_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'body_background_fit' => ['required', Rule::in(['cover', 'contain', 'fill'])],
+            'body_background_overlay_opacity' => ['nullable', 'numeric', 'min:0', 'max:1'],
             'app_logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'logo_width' => ['nullable', 'numeric', 'min:0'],
             'logo_width_unit' => ['required', Rule::in(['px', '%', 'rem', 'vw'])],
@@ -45,6 +46,7 @@ class ThemeSettingsController extends Controller
 
         $payload = [
             'body_background_fit' => $validated['body_background_fit'],
+            'body_background_overlay_opacity' => $validated['body_background_overlay_opacity'] ?? null,
             'logo_width' => $validated['logo_width'],
             'logo_width_unit' => $validated['logo_width_unit'],
             'logo_height' => $validated['logo_height'],

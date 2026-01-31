@@ -66,6 +66,31 @@
                             <option value="fill" {{ $selectedFit === 'fill' ? 'selected' : '' }}>{{ text('admin.theme.background.fit_fill', 'Fill') }}</option>
                         </select>
                     </div>
+                    <div class="md:col-span-2">
+                        @php
+                            $overlayOpacity = old('body_background_overlay_opacity', $settings->body_background_overlay_opacity ?? 0.90);
+                        @endphp
+                        <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="body-background-overlay-opacity">
+                            {{ text('admin.theme.background.overlay_opacity', 'Background overlay opacity') }}
+                        </label>
+                        <div class="mt-2 flex items-center gap-3">
+                            <input
+                                id="body-background-overlay-opacity"
+                                class="w-full"
+                                type="range"
+                                name="body_background_overlay_opacity"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                value="{{ $overlayOpacity }}"
+                                oninput="document.getElementById('body-background-overlay-opacity-value').textContent = this.value"
+                            >
+                            <span class="text-xs font-semibold text-muted" id="body-background-overlay-opacity-value">{{ $overlayOpacity }}</span>
+                        </div>
+                        <p class="mt-1 text-xs text-muted">
+                            {{ text('admin.theme.background.overlay_opacity_hint', 'Controls how strong the white overlay on top of the background image is.') }}
+                        </p>
+                    </div>
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-2">
