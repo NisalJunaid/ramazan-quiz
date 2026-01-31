@@ -214,6 +214,52 @@
                             </div>
                         </div>
                     </div>
+                    <div class="grid gap-3 rounded-xl border border-dashed p-4">
+                        @php
+                            $heroContentOffset = old('home_hero_content_offset', $settings->home_hero_content_offset ?? 200);
+                            $heroContentOffsetUnit = old('home_hero_content_offset_unit', $settings->home_hero_content_offset_unit ?? 'px');
+                        @endphp
+                        <div>
+                            <h4 class="text-sm font-semibold text-theme">Hero content offset</h4>
+                            <p class="mt-1 text-xs text-muted">This controls the horizontal spacing between the hero logo and the text content.</p>
+                        </div>
+                        <div class="grid gap-4 md:grid-cols-[1fr_120px]">
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-hero-content-offset">
+                                    Offset distance
+                                </label>
+                                <input
+                                    id="home-hero-content-offset"
+                                    class="mt-2 w-full"
+                                    type="range"
+                                    name="home_hero_content_offset"
+                                    min="0"
+                                    max="600"
+                                    step="10"
+                                    value="{{ $heroContentOffset }}"
+                                    oninput="document.getElementById('home-hero-content-offset-value').textContent = this.value"
+                                >
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-hero-content-offset-unit">
+                                    Unit
+                                </label>
+                                <select
+                                    id="home-hero-content-offset-unit"
+                                    class="input mt-1 w-full px-3 py-2 text-sm"
+                                    name="home_hero_content_offset_unit"
+                                    oninput="document.getElementById('home-hero-content-offset-unit-value').textContent = this.value"
+                                >
+                                    <option value="px" {{ $heroContentOffsetUnit === 'px' ? 'selected' : '' }}>px</option>
+                                    <option value="rem" {{ $heroContentOffsetUnit === 'rem' ? 'selected' : '' }}>rem</option>
+                                    <option value="%" {{ $heroContentOffsetUnit === '%' ? 'selected' : '' }}>%</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="text-xs font-semibold text-muted">
+                            Content starts <span id="home-hero-content-offset-value">{{ $heroContentOffset }}</span><span id="home-hero-content-offset-unit-value">{{ $heroContentOffsetUnit }}</span> from logo
+                        </p>
+                    </div>
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-2">
