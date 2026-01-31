@@ -20,6 +20,11 @@ class Setting extends Model
         'home_logo_width_unit',
         'home_logo_height',
         'home_logo_height_unit',
+        'home_hero_background_image',
+        'home_hero_background_opacity',
+        'home_hero_background_fit',
+        'home_hero_background_position',
+        'home_hero_background_repeat',
         'primary_color',
         'primary_hover_color',
         'accent_color',
@@ -41,6 +46,7 @@ class Setting extends Model
         'home_logo_width' => 'float',
         'home_logo_height' => 'float',
         'body_background_overlay_opacity' => 'float',
+        'home_hero_background_opacity' => 'float',
     ];
 
     public static function current(): self

@@ -26,6 +26,12 @@ class ThemeSettingsController extends Controller
             'body_background_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'body_background_fit' => ['required', Rule::in(['cover', 'contain', 'fill'])],
             'body_background_overlay_opacity' => ['nullable', 'numeric', 'min:0', 'max:1'],
+            'home_hero_background_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'home_hero_background_remove' => ['nullable', 'boolean'],
+            'home_hero_background_opacity' => ['nullable', 'numeric', 'min:0', 'max:1'],
+            'home_hero_background_fit' => ['required', Rule::in(['cover', 'contain', 'fill', 'none', 'scale-down'])],
+            'home_hero_background_position' => ['required', Rule::in(['center', 'top', 'bottom', 'left', 'right'])],
+            'home_hero_background_repeat' => ['required', Rule::in(['no-repeat', 'repeat', 'repeat-x', 'repeat-y'])],
             'app_logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'logo_width' => ['nullable', 'numeric', 'min:0'],
             'logo_width_unit' => ['required', Rule::in(['px', '%', 'rem', 'vw'])],
@@ -51,6 +57,10 @@ class ThemeSettingsController extends Controller
         $payload = [
             'body_background_fit' => $validated['body_background_fit'],
             'body_background_overlay_opacity' => $validated['body_background_overlay_opacity'] ?? null,
+            'home_hero_background_opacity' => $validated['home_hero_background_opacity'] ?? null,
+            'home_hero_background_fit' => $validated['home_hero_background_fit'],
+            'home_hero_background_position' => $validated['home_hero_background_position'],
+            'home_hero_background_repeat' => $validated['home_hero_background_repeat'],
             'logo_width' => $validated['logo_width'],
             'logo_width_unit' => $validated['logo_width_unit'],
             'logo_height' => $validated['logo_height'],
@@ -77,6 +87,21 @@ class ThemeSettingsController extends Controller
 
             $payload['body_background_image'] = $request->file('body_background_image')
                 ->store('theme', 'public');
+        }
+
+        if ($request->hasFile('home_hero_background_image')) {
+            if ($setting->home_hero_background_image) {
+                Storage::disk('public')->delete($setting->home_hero_background_image);
+            }
+
+            $payload['home_hero_background_image'] = $request->file('home_hero_background_image')
+                ->store('theme', 'public');
+        } elseif ($request->boolean('home_hero_background_remove')) {
+            if ($setting->home_hero_background_image) {
+                Storage::disk('public')->delete($setting->home_hero_background_image);
+            }
+
+            $payload['home_hero_background_image'] = null;
         }
 
         if ($request->hasFile('app_logo')) {
