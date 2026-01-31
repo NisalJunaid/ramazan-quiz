@@ -11,6 +11,8 @@ class AppText extends Model
         'value',
         'locale',
         'font_id',
+        'font_size',
+        'text_color',
     ];
 
     public function font()
