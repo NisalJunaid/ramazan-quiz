@@ -20,9 +20,12 @@
                 'scale-down' => 'contain',
             ];
             $heroBackgroundSize = $heroBackgroundSizeMap[$heroBackgroundFit] ?? 'cover';
+            $offsetValue = $themeSettings?->home_hero_content_offset ?? 200;
+            $offsetUnit = $themeSettings?->home_hero_content_offset_unit ?? 'px';
         @endphp
 
-        <section class="card relative overflow-hidden p-8 shadow-sm">
+        {{-- Hero content offset controlled via theme settings. --}}
+        <section class="card relative overflow-hidden p-8 shadow-sm" style="--hero-content-offset: {{ $offsetValue }}{{ $offsetUnit }};">
             @if ($heroBackgroundUrl)
                 <div class="absolute inset-0 pointer-events-none">
                     @if ($heroBackgroundUsesRepeat)
@@ -46,7 +49,7 @@
                         {{ session('status') }}
                     </div>
                 @endif
-                <div class="grid gap-8 items-center md:grid-cols-[auto_1fr_minmax(420px,520px)] md:[dir=rtl]:grid-cols-[minmax(420px,520px)_1fr_auto]">
+                <div class="grid gap-8 items-center md:grid-cols-[auto_var(--hero-content-offset)_minmax(420px,520px)] md:[dir=rtl]:grid-cols-[minmax(420px,520px)_var(--hero-content-offset)_auto]">
                     <div class="shrink-0 flex justify-start md:justify-start md:[dir=rtl]:justify-end">
                         <x-application-logo :home="true" />
                     </div>
