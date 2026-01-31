@@ -93,6 +93,129 @@
                     </div>
                 </div>
 
+                <div class="grid gap-4 rounded-2xl border border-dashed p-4">
+                    <div>
+                        <h3 class="text-base font-semibold text-theme">Homepage Hero Background</h3>
+                        <p class="mt-1 text-sm text-muted">Customize the image shown behind the homepage hero card only.</p>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-hero-background-image">
+                                Hero background image
+                            </label>
+                            <input
+                                id="home-hero-background-image"
+                                class="input mt-1 w-full px-3 py-2 text-sm"
+                                type="file"
+                                name="home_hero_background_image"
+                                accept="image/png,image/jpeg,image/webp"
+                            >
+                            <p class="mt-1 text-xs text-muted">PNG, JPG, or WEBP up to 2MB.</p>
+                            @if ($settings->home_hero_background_image)
+                                <div class="mt-3 flex items-center gap-3">
+                                    <img
+                                        class="h-16 w-20 rounded-lg border object-cover"
+                                        src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($settings->home_hero_background_image) }}"
+                                        alt="Current homepage hero background"
+                                    >
+                                    <label class="text-xs font-semibold uppercase tracking-wide text-muted">
+                                        <input class="mr-2 rounded border-gray-300" type="checkbox" name="home_hero_background_remove" value="1">
+                                        Remove image
+                                    </label>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="grid gap-4">
+                            <div>
+                                @php
+                                    $heroOpacity = old('home_hero_background_opacity', $settings->home_hero_background_opacity ?? 0.15);
+                                @endphp
+                                <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-hero-background-opacity">
+                                    Hero background opacity
+                                </label>
+                                <div class="mt-2 flex items-center gap-3">
+                                    <input
+                                        id="home-hero-background-opacity"
+                                        class="w-full"
+                                        type="range"
+                                        name="home_hero_background_opacity"
+                                        min="0"
+                                        max="1"
+                                        step="0.05"
+                                        value="{{ $heroOpacity }}"
+                                        oninput="document.getElementById('home-hero-background-opacity-value').textContent = this.value"
+                                    >
+                                    <span class="text-xs font-semibold text-muted" id="home-hero-background-opacity-value">{{ $heroOpacity }}</span>
+                                </div>
+                                <p class="mt-1 text-xs text-muted">
+                                    Controls how strong the hero background image appears behind the card content.
+                                </p>
+                            </div>
+                            <div class="grid gap-4 md:grid-cols-2">
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-hero-background-fit">
+                                        Object fit
+                                    </label>
+                                    <select
+                                        id="home-hero-background-fit"
+                                        class="input mt-1 w-full px-3 py-2 text-sm"
+                                        name="home_hero_background_fit"
+                                        required
+                                    >
+                                        @php
+                                            $selectedHeroFit = old('home_hero_background_fit', $settings->home_hero_background_fit ?? 'cover');
+                                        @endphp
+                                        <option value="cover" {{ $selectedHeroFit === 'cover' ? 'selected' : '' }}>Cover</option>
+                                        <option value="contain" {{ $selectedHeroFit === 'contain' ? 'selected' : '' }}>Contain</option>
+                                        <option value="fill" {{ $selectedHeroFit === 'fill' ? 'selected' : '' }}>Fill</option>
+                                        <option value="none" {{ $selectedHeroFit === 'none' ? 'selected' : '' }}>None</option>
+                                        <option value="scale-down" {{ $selectedHeroFit === 'scale-down' ? 'selected' : '' }}>Scale-down</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-hero-background-position">
+                                        Position
+                                    </label>
+                                    <select
+                                        id="home-hero-background-position"
+                                        class="input mt-1 w-full px-3 py-2 text-sm"
+                                        name="home_hero_background_position"
+                                        required
+                                    >
+                                        @php
+                                            $selectedHeroPosition = old('home_hero_background_position', $settings->home_hero_background_position ?? 'center');
+                                        @endphp
+                                        <option value="center" {{ $selectedHeroPosition === 'center' ? 'selected' : '' }}>Center</option>
+                                        <option value="top" {{ $selectedHeroPosition === 'top' ? 'selected' : '' }}>Top</option>
+                                        <option value="bottom" {{ $selectedHeroPosition === 'bottom' ? 'selected' : '' }}>Bottom</option>
+                                        <option value="left" {{ $selectedHeroPosition === 'left' ? 'selected' : '' }}>Left</option>
+                                        <option value="right" {{ $selectedHeroPosition === 'right' ? 'selected' : '' }}>Right</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="home-hero-background-repeat">
+                                        Repeat
+                                    </label>
+                                    <select
+                                        id="home-hero-background-repeat"
+                                        class="input mt-1 w-full px-3 py-2 text-sm"
+                                        name="home_hero_background_repeat"
+                                        required
+                                    >
+                                        @php
+                                            $selectedHeroRepeat = old('home_hero_background_repeat', $settings->home_hero_background_repeat ?? 'no-repeat');
+                                        @endphp
+                                        <option value="no-repeat" {{ $selectedHeroRepeat === 'no-repeat' ? 'selected' : '' }}>No repeat</option>
+                                        <option value="repeat" {{ $selectedHeroRepeat === 'repeat' ? 'selected' : '' }}>Repeat</option>
+                                        <option value="repeat-x" {{ $selectedHeroRepeat === 'repeat-x' ? 'selected' : '' }}>Repeat X</option>
+                                        <option value="repeat-y" {{ $selectedHeroRepeat === 'repeat-y' ? 'selected' : '' }}>Repeat Y</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-wide text-muted" for="app-logo">
