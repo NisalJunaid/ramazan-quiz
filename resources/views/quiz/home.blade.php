@@ -8,11 +8,11 @@
                     {{ session('status') }}
                 </div>
             @endif
-            <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                <div class="order-2 flex shrink-0 justify-end md:order-2">
-                    <x-application-logo :theme-settings="$themeSettings" :home="true" class="w-auto max-w-full" />
+            <div class="flex flex-col gap-6 md:flex-row rtl:md:flex-row-reverse md:items-center md:justify-between">
+                <div class="flex shrink-0 justify-end">
+                    <x-application-logo :home="true" />
                 </div>
-                <div class="order-1 max-w-2xl md:order-1">
+                <div class="max-w-2xl">
                     <p class="text-xs uppercase tracking-[0.4em] text-amber-500">{{ text('home.overline', 'Ramazan Daily Quiz Portal') }}</p>
                     <h1 class="mt-4 text-3xl font-semibold text-theme sm:text-4xl">{{ text('home.title', "Welcome to today's learning journey.") }}</h1>
                     <p class="mt-3 text-sm text-muted sm:text-base">
