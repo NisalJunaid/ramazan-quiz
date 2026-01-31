@@ -4,15 +4,17 @@
     <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 sm:px-6 lg:px-8">
         <header class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-semibold text-emerald-700">Leaderboard</h1>
-                <p class="mt-1 text-sm text-gray-600">Latest quiz rankings and submission order.</p>
+                <h1 class="text-2xl font-semibold text-emerald-700">{{ text('leaderboard.title', 'Leaderboard') }}</h1>
+                <p class="mt-1 text-sm text-gray-600">{{ text('leaderboard.subtitle', 'Latest quiz rankings and submission order.') }}</p>
             </div>
-            <a class="text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('home') }}">Back to Home</a>
+            <a class="text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('home') }}">
+                {{ text('leaderboard.back', 'Back to Home') }}
+            </a>
         </header>
 
         @if (! $quizDay)
             <div class="rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-center text-sm text-gray-600">
-                No quiz available yet.
+                {{ text('leaderboard.empty', 'No quiz available yet.') }}
             </div>
         @else
             <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
@@ -22,16 +24,16 @@
                 </div>
 
                 @if ($attempts->isEmpty())
-                    <p class="mt-4 text-sm text-gray-600">No submissions yet.</p>
+                    <p class="mt-4 text-sm text-gray-600">{{ text('leaderboard.none', 'No submissions yet.') }}</p>
                 @else
                     <div class="mt-6 overflow-x-auto rounded-2xl border border-gray-200">
                         <table class="min-w-full text-sm">
-                            <thead class="bg-emerald-50 text-left text-xs uppercase tracking-widest text-emerald-700">
+                            <thead class="bg-emerald-50 text-start text-xs uppercase tracking-widest text-emerald-700">
                                 <tr>
-                                    <th class="px-4 py-3">Rank</th>
-                                    <th class="px-4 py-3">Name</th>
-                                    <th class="px-4 py-3">Score</th>
-                                    <th class="px-4 py-3">Submitted At</th>
+                                    <th class="px-4 py-3">{{ text('leaderboard.table.rank', 'Rank') }}</th>
+                                    <th class="px-4 py-3">{{ text('leaderboard.table.name', 'Name') }}</th>
+                                    <th class="px-4 py-3">{{ text('leaderboard.table.score', 'Score') }}</th>
+                                    <th class="px-4 py-3">{{ text('leaderboard.table.submitted', 'Submitted At') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">

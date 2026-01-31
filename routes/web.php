@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminQuizController;
 use App\Http\Controllers\Admin\AdminQuestionController;
 use App\Http\Controllers\Admin\AdminChoiceController;
+use App\Http\Controllers\Admin\AppTextController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +95,22 @@ Route::middleware(['auth', 'admin'])
 
         Route::put('/choices/{choice}', [AdminChoiceController::class, 'update'])
             ->name('choices.update');
+
+        // Text management
+        Route::get('/texts', [AppTextController::class, 'index'])
+            ->name('texts.index');
+
+        Route::post('/texts', [AppTextController::class, 'store'])
+            ->name('texts.store');
+
+        Route::put('/texts/{text}', [AppTextController::class, 'update'])
+            ->name('texts.update');
+
+        Route::delete('/texts/{text}', [AppTextController::class, 'destroy'])
+            ->name('texts.destroy');
+
+        Route::put('/settings/rtl', [AppTextController::class, 'updateSettings'])
+            ->name('settings.rtl');
     });
 
 /*

@@ -86,7 +86,7 @@ class AdminQuizController extends Controller
 
         return redirect()
             ->route('admin.quizzes.index')
-            ->with('status', 'Quiz range created.');
+            ->with('status', text('admin.quizzes.created', 'Quiz range created.'));
     }
 
     public function update(Request $request, int $id): RedirectResponse
@@ -124,7 +124,7 @@ class AdminQuizController extends Controller
 
         return redirect()
             ->route('admin.quizzes.index')
-            ->with('status', 'Quiz range updated.');
+            ->with('status', text('admin.quizzes.updated', 'Quiz range updated.'));
     }
 
     public function showDays(QuizRange $quizRange): View

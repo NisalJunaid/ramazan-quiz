@@ -232,12 +232,12 @@ class QuizController extends Controller
             || $quizDay->start_at > $now
             || $quizDay->end_at < $now
         ) {
-            return $redirect->with('status', 'Quiz not available');
+            return $redirect->with('status', text('quiz.status.not_available', 'Quiz not available'));
         }
 
         $user = $request->user();
         if (! $user) {
-            return $redirect->with('status', 'Unauthorized');
+            return $redirect->with('status', text('quiz.status.unauthorized', 'Unauthorized'));
         }
 
         $created = false;
@@ -283,23 +283,23 @@ class QuizController extends Controller
             if ($attempt->status === 'in_progress') {
                 $expiresAt = Carbon::parse($attempt->expires_at);
                 if ($now->lessThan($expiresAt)) {
-                    return $redirect->with('status', 'Attempt already started');
+                    return $redirect->with('status', text('quiz.status.already_started', 'Attempt already started'));
                 }
 
                 $attempt->update(['status' => 'expired']);
 
-                return $redirect->with('status', 'Attempt expired');
+                return $redirect->with('status', text('quiz.status.expired', 'Attempt expired'));
             }
 
             if ($attempt->status === 'submitted') {
-                return $redirect->with('status', 'Already attempted');
+                return $redirect->with('status', text('quiz.status.submitted', 'Already attempted'));
             }
 
             if ($attempt->status === 'expired') {
-                return $redirect->with('status', 'Attempt expired');
+                return $redirect->with('status', text('quiz.status.expired', 'Attempt expired'));
             }
         }
 
-        return $redirect->with('status', 'Attempt started');
+        return $redirect->with('status', text('quiz.status.started', 'Attempt started'));
     }
 }

@@ -17,13 +17,13 @@
 
                     <!-- Home -->
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                        {{ __('Home') }}
+                        {{ text('navigation.home', 'Home') }}
                     </x-nav-link>
 
                     <!-- Leaderboard -->
                     @if ($canViewLeaderboard)
                         <x-nav-link :href="route('leaderboard')" :active="request()->routeIs('leaderboard')">
-                            {{ __('Leaderboard') }}
+                            {{ text('navigation.leaderboard', 'Leaderboard') }}
                         </x-nav-link>
                     @endif
 
@@ -31,7 +31,7 @@
                     @auth
                         @if(Auth::user()->role === 'admin')
                             <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.*')">
-                                {{ __('Admin') }}
+                                {{ text('navigation.admin', 'Admin') }}
                             </x-nav-link>
                         @endif
                     @endauth
@@ -62,14 +62,14 @@
 
                         <x-slot name="content">
                             <x-dropdown-link :href="route('profile.edit')">
-                                {{ __('Profile') }}
+                                {{ text('navigation.profile', 'Profile') }}
                             </x-dropdown-link>
 
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault(); this.closest('form').submit();">
-                                    {{ __('Log Out') }}
+                                    {{ text('navigation.logout', 'Log Out') }}
                                 </x-dropdown-link>
                             </form>
                         </x-slot>
@@ -77,12 +77,12 @@
                 @else
                     <div class="flex items-center gap-3">
                         <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
-                            {{ __('Login') }}
+                            {{ text('navigation.login', 'Login') }}
                         </x-nav-link>
                         <a
                             href="{{ route('register') }}"
                             class="inline-flex items-center px-4 py-2 bg-emerald-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-emerald-700 focus:bg-emerald-700 active:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            {{ __('Register') }}
+                            {{ text('navigation.register', 'Register') }}
                         </a>
                     </div>
                 @endauth
@@ -113,19 +113,19 @@
         <div class="pt-2 pb-3 space-y-1">
 
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                {{ __('Home') }}
+                {{ text('navigation.home', 'Home') }}
             </x-responsive-nav-link>
 
             @if ($canViewLeaderboard)
                 <x-responsive-nav-link :href="route('leaderboard')" :active="request()->routeIs('leaderboard')">
-                    {{ __('Leaderboard') }}
+                    {{ text('navigation.leaderboard', 'Leaderboard') }}
                 </x-responsive-nav-link>
             @endif
 
             @auth
                 @if(Auth::user()->role === 'admin')
                     <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.*')">
-                        {{ __('Admin') }}
+                        {{ text('navigation.admin', 'Admin') }}
                     </x-responsive-nav-link>
                 @endif
             @endauth
@@ -145,24 +145,24 @@
 
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Profile') }}
+                        {{ text('navigation.profile', 'Profile') }}
                     </x-responsive-nav-link>
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault(); this.closest('form').submit();">
-                            {{ __('Log Out') }}
+                            {{ text('navigation.logout', 'Log Out') }}
                         </x-responsive-nav-link>
                     </form>
                 </div>
             @else
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('login')">
-                        {{ __('Login') }}
+                        {{ text('navigation.login', 'Login') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('register')">
-                        {{ __('Register') }}
+                        {{ text('navigation.register', 'Register') }}
                     </x-responsive-nav-link>
                 </div>
             @endauth

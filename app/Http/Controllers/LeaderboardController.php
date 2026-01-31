@@ -31,7 +31,7 @@ class LeaderboardController extends Controller
             // Leaderboard visibility is controlled per quiz range; non-admins are redirected when hidden.
             return redirect()
                 ->route('home')
-                ->with('status', 'Leaderboard is currently hidden.');
+                ->with('status', text('leaderboard.hidden.message', 'Leaderboard is currently hidden.'));
         }
 
         if ($quizDay) {
