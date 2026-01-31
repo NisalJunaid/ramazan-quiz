@@ -20,8 +20,10 @@
                 'scale-down' => 'contain',
             ];
             $heroBackgroundSize = $heroBackgroundSizeMap[$heroBackgroundFit] ?? 'cover';
-            $offsetValue = $themeSettings?->home_hero_content_offset ?? 200;
-            $offsetUnit = $themeSettings?->home_hero_content_offset_unit ?? 'px';
+            $offsetValue = $themeSettings?->home_hero_content_offset;
+            $offsetUnit = $themeSettings?->home_hero_content_offset_unit;
+            $offsetValue = is_null($offsetValue) ? 200 : $offsetValue;
+            $offsetUnit = is_null($offsetUnit) ? 'px' : $offsetUnit;
         @endphp
 
         {{-- Hero content offset controlled via theme settings. --}}
@@ -49,12 +51,12 @@
                         {{ session('status') }}
                     </div>
                 @endif
-                <div class="grid gap-8 items-center md:grid-cols-[auto_var(--hero-content-offset)_minmax(420px,520px)] md:[dir=rtl]:grid-cols-[minmax(420px,520px)_var(--hero-content-offset)_auto]">
+                <div class="grid items-center md:grid-cols-[auto_var(--hero-content-offset)_auto] md:[dir=rtl]:grid-cols-[auto_var(--hero-content-offset)_auto]">
                     <div class="shrink-0 flex justify-start md:justify-start md:[dir=rtl]:justify-end">
                         <x-application-logo :home="true" />
                     </div>
                     <div aria-hidden="true"></div>
-                    <div class="max-w-xl">
+                    <div>
                         <p class="text-xs uppercase tracking-[0.4em] text-amber-500">{{ text('home.overline', 'Ramazan Daily Quiz Portal') }}</p>
                         <h1 class="mt-4 text-3xl font-semibold text-theme sm:text-4xl">{{ text('home.title', "Welcome to today's learning journey.") }}</h1>
                         <p class="mt-3 text-sm text-muted sm:text-base">
