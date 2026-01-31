@@ -21,6 +21,7 @@ class ThemeSettingsController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        $hexColorRule = ['nullable', 'regex:/^#([A-Fa-f0-9]{6})$/'];
         $validated = $request->validate([
             'body_background_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'body_background_fit' => ['required', Rule::in(['cover', 'contain', 'fill'])],
@@ -29,6 +30,15 @@ class ThemeSettingsController extends Controller
             'logo_width_unit' => ['required', Rule::in(['px', '%', 'rem', 'vw'])],
             'logo_height' => ['nullable', 'numeric', 'min:0'],
             'logo_height_unit' => ['nullable', Rule::in(['px', '%', 'rem', 'vw'])],
+            'primary_color' => $hexColorRule,
+            'primary_hover_color' => $hexColorRule,
+            'accent_color' => $hexColorRule,
+            'text_color' => $hexColorRule,
+            'border_color' => $hexColorRule,
+            'ring_color' => ['nullable', 'string', 'max:32'],
+            'focus_ring_color' => ['nullable', 'string', 'max:32'],
+            'button_radius' => ['nullable', 'string', 'max:32'],
+            'card_radius' => ['nullable', 'string', 'max:32'],
         ]);
 
         $setting = Setting::current();
@@ -39,6 +49,15 @@ class ThemeSettingsController extends Controller
             'logo_width_unit' => $validated['logo_width_unit'],
             'logo_height' => $validated['logo_height'],
             'logo_height_unit' => $validated['logo_height_unit'] ?: null,
+            'primary_color' => $validated['primary_color'] ?? null,
+            'primary_hover_color' => $validated['primary_hover_color'] ?? null,
+            'accent_color' => $validated['accent_color'] ?? null,
+            'text_color' => $validated['text_color'] ?? null,
+            'border_color' => $validated['border_color'] ?? null,
+            'ring_color' => $validated['ring_color'] ?? null,
+            'focus_ring_color' => $validated['focus_ring_color'] ?? null,
+            'button_radius' => $validated['button_radius'] ?? null,
+            'card_radius' => $validated['card_radius'] ?? null,
         ];
 
         if ($request->hasFile('body_background_image')) {

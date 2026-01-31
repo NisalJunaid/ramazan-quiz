@@ -4,6 +4,34 @@
     $googleFonts = $fontCollection->where('source_type', 'google');
     $uploadFonts = $fontCollection->where('source_type', 'upload');
     $themeSettings = $themeSettings ?? null;
+    $themeDefaults = [
+        'primary_color' => '#059669',
+        'primary_hover_color' => '#047857',
+        'accent_color' => '#f59e0b',
+        'surface_color' => '#ffffff',
+        'surface_tint' => 'rgba(255,255,255,0.90)',
+        'text_color' => '#111827',
+        'muted_text_color' => '#4b5563',
+        'border_color' => 'rgba(17,24,39,0.12)',
+        'ring_color' => 'rgba(5,150,105,0.18)',
+        'button_radius' => '9999px',
+        'card_radius' => '24px',
+        'focus_ring_color' => 'rgba(5,150,105,0.35)',
+    ];
+    $themeVars = [
+        "--color-primary: " . ($themeSettings?->primary_color ?? $themeDefaults['primary_color']) . ';',
+        "--color-primary-hover: " . ($themeSettings?->primary_hover_color ?? $themeDefaults['primary_hover_color']) . ';',
+        "--color-accent: " . ($themeSettings?->accent_color ?? $themeDefaults['accent_color']) . ';',
+        "--color-surface: " . ($themeSettings?->surface_color ?? $themeDefaults['surface_color']) . ';',
+        "--color-surface-tint: " . ($themeSettings?->surface_tint ?? $themeDefaults['surface_tint']) . ';',
+        "--color-text: " . ($themeSettings?->text_color ?? $themeDefaults['text_color']) . ';',
+        "--color-muted: " . ($themeSettings?->muted_text_color ?? $themeDefaults['muted_text_color']) . ';',
+        "--color-border: " . ($themeSettings?->border_color ?? $themeDefaults['border_color']) . ';',
+        "--color-ring: " . ($themeSettings?->ring_color ?? $themeDefaults['ring_color']) . ';',
+        "--radius-button: " . ($themeSettings?->button_radius ?? $themeDefaults['button_radius']) . ';',
+        "--radius-card: " . ($themeSettings?->card_radius ?? $themeDefaults['card_radius']) . ';',
+        "--color-focus-ring: " . ($themeSettings?->focus_ring_color ?? $themeDefaults['focus_ring_color']) . ';',
+    ];
     $bodyBackgroundUrl = $themeSettings?->body_background_image
         ? asset('storage/' . $themeSettings->body_background_image)
         : null;
@@ -12,15 +40,21 @@
         'fill' => '100% 100%',
         default => 'cover',
     };
-    $bodyStyle = $bodyBackgroundUrl
-        ? "background-image: url('{$bodyBackgroundUrl}'); background-size: {$bodyBackgroundSize}; background-repeat: no-repeat; background-position: center center;"
-        : '';
+    $bodyStyle = trim(implode(' ', array_merge($themeVars, [
+        'background-color: var(--color-surface);',
+        $bodyBackgroundUrl
+            ? "background-image: url('{$bodyBackgroundUrl}'); background-size: {$bodyBackgroundSize}; background-repeat: no-repeat; background-position: center center;"
+            : '',
+    ])));
     $bodyClass = $bodyBackgroundUrl
-        ? 'font-sans text-gray-900 antialiased'
-        : 'font-sans text-gray-900 antialiased bg-white';
+        ? 'font-sans text-theme antialiased'
+        : 'font-sans text-theme antialiased';
     $containerClass = $bodyBackgroundUrl
-        ? 'min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-white/90'
-        : 'min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-white';
+        ? 'min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0'
+        : 'min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0';
+    $containerStyle = $bodyBackgroundUrl
+        ? 'background: var(--color-surface-tint);'
+        : 'background: var(--color-surface);';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}" class="{{ $isRtl ? 'rtl' : 'ltr' }}">
@@ -66,15 +100,15 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="{{ $bodyClass }}" @if ($bodyStyle) style="{{ $bodyStyle }}" @endif>
-        <div class="{{ $containerClass }}">
+    <body class="{{ $bodyClass }}" style="{{ $bodyStyle }}">
+        <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
             <div>
                 <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" :theme-settings="$themeSettings" />
+                    <x-application-logo class="w-20 h-20 fill-current" style="color: var(--color-primary);" :theme-settings="$themeSettings" />
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg ring-1 ring-gray-200/70">
+            <div class="card w-full sm:max-w-md mt-6 px-6 py-4 shadow-md overflow-hidden">
                 {{ $slot }}
             </div>
         </div>
