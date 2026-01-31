@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppText;
+use App\Models\Font;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class AppTextController extends Controller
         $search = $request->string('search')->toString();
 
         $texts = AppText::query()
+            ->with('font')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where('key', 'like', "%{$search}%");
             })
@@ -43,6 +45,7 @@ class AppTextController extends Controller
             'groupedTexts' => $groupedTexts,
             'search' => $search,
             'settings' => Setting::current(),
+            'fonts' => Font::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -99,6 +102,7 @@ class AppTextController extends Controller
         $validated = $request->validate([
             'texts' => ['required', 'array'],
             'texts.*.value' => ['nullable', 'string'],
+            'texts.*.font_id' => ['nullable', 'integer', 'exists:fonts,id'],
         ]);
 
         $submittedTexts = $validated['texts'];
@@ -115,13 +119,17 @@ class AppTextController extends Controller
             }
 
             $value = (string) $payload['value'];
+            $fontId = $payload['font_id'] ?? null;
+            $fontId = $fontId === '' ? null : $fontId;
+            $fontId = $fontId !== null ? (int) $fontId : null;
 
-            if ($value === $text->value) {
+            if ($value === $text->value && $fontId === $text->font_id) {
                 continue;
             }
 
             $text->update([
                 'value' => $value,
+                'font_id' => $fontId,
             ]);
 
             $this->forgetCache($text->key, $text->locale);

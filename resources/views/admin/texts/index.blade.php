@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    $isRtl = is_rtl();
+@endphp
+
 @section('content')
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 sm:px-6 lg:px-8">
         <header class="flex flex-wrap items-start justify-between gap-4">
@@ -159,6 +163,7 @@
                                             <th class="px-4 py-3">{{ text('admin.texts.table.key', 'Key') }}</th>
                                             <th class="px-4 py-3">{{ text('admin.texts.table.locale', 'Locale') }}</th>
                                             <th class="px-4 py-3">{{ text('admin.texts.table.value', 'Value') }}</th>
+                                            <th class="px-4 py-3">{{ text('admin.texts.table.font', 'Font') }}</th>
                                             <th class="px-4 py-3">{{ text('admin.texts.table.fallback', 'Fallback') }}</th>
                                             <th class="px-4 py-3">{{ text('admin.texts.table.actions', 'Actions') }}</th>
                                         </tr>
@@ -179,6 +184,35 @@
                                                         name="texts[{{ $text->id }}][value]"
                                                         value="{{ $text->value }}"
                                                     >
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <div class="flex items-center gap-2">
+                                                        <select
+                                                            class="h-9 w-full rounded-xl border-gray-300 px-3 text-xs focus:border-emerald-500 focus:ring-emerald-500 {{ $text->font?->css_class }}"
+                                                            name="texts[{{ $text->id }}][font_id]"
+                                                        >
+                                                            <option value="">{{ text('admin.texts.table.font_default', 'Default') }}</option>
+                                                            @foreach ($fonts as $font)
+                                                                <option
+                                                                    value="{{ $font->id }}"
+                                                                    {{ $text->font_id === $font->id ? 'selected' : '' }}
+                                                                >
+                                                                    {{ $font->name }}
+                                                                    @if ($isRtl && ! $font->is_rtl_optimized)
+                                                                        ({{ text('admin.texts.table.font_not_rtl', 'Not RTL') }})
+                                                                    @endif
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @if ($text->font)
+                                                            <span class="text-xs text-gray-500 {{ $text->font->css_class }}">Aa</span>
+                                                        @endif
+                                                    </div>
+                                                    @if ($isRtl && $text->font && ! $text->font->is_rtl_optimized)
+                                                        <p class="mt-1 text-xs text-amber-600">
+                                                            {{ text('admin.texts.table.font_warning', 'Selected font is not optimized for RTL.') }}
+                                                        </p>
+                                                    @endif
                                                 </td>
                                                 <td class="px-4 py-3">
                                                     <input

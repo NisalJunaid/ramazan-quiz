@@ -27,6 +27,15 @@
                 </a>
             </div>
 
+            <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">{{ text('admin.dashboard.fonts.title', 'Manage Fonts') }}</h2>
+                <p class="mt-2 text-sm text-gray-600">{{ text('admin.dashboard.fonts.subtitle', 'Upload fonts and assign typography to app text keys.') }}</p>
+                <a class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('admin.fonts.index') }}">
+                    {{ text('admin.dashboard.fonts.link', 'Open Font Manager') }}
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+
             <div class="rounded-2xl border border-dashed border-gray-300 bg-white p-6">
                 <h2 class="text-lg font-semibold text-gray-900">{{ text('admin.dashboard.tips.title', 'Quick Tips') }}</h2>
                 <ul class="mt-3 space-y-2 text-sm text-gray-600">

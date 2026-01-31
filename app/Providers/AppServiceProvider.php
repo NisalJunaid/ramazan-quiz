@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Font;
 use App\Models\QuizDay;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,10 +41,14 @@ class AppServiceProvider extends ServiceProvider
 
             $leaderboardIsPublic = $quizDay?->quizRange?->leaderboard_is_public ?? false;
             $isAdmin = auth()->user()?->role === 'admin';
+            $fonts = Schema::hasTable('fonts')
+                ? Font::query()->orderBy('name')->get()
+                : collect();
 
             $view->with([
                 'leaderboardIsPublic' => $leaderboardIsPublic,
                 'canViewLeaderboard' => $leaderboardIsPublic || $isAdmin,
+                'fonts' => $fonts,
             ]);
         });
     }
