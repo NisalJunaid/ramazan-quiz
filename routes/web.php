@@ -103,6 +103,9 @@ Route::middleware(['auth', 'admin'])
         Route::post('/texts', [AppTextController::class, 'store'])
             ->name('texts.store');
 
+        Route::post('/texts/bulk-update', [AppTextController::class, 'bulkUpdate'])
+            ->name('texts.bulkUpdate');
+
         Route::put('/texts/{text}', [AppTextController::class, 'update'])
             ->name('texts.update');
 
