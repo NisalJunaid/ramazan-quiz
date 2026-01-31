@@ -83,6 +83,7 @@ class QuizController extends Controller
         $currentScore = 0;
         $maxPossibleScore = null;
         $currentDayNumber = null;
+        $isAttemptActive = false;
 
         if ($quizDay && $selectedQuizRange) {
             $quizDays = $selectedQuizRange->quizDays()
@@ -191,6 +192,8 @@ class QuizController extends Controller
                     $selectedChoiceId = $attempt->answers->first()?->choice_id;
                 }
             }
+
+            $isAttemptActive = ($attempt && $attempt->status === 'in_progress' && $remainingSeconds !== null);
         }
 
         return view('quiz.today', [
@@ -213,6 +216,7 @@ class QuizController extends Controller
             'selectedChoiceId' => $selectedChoiceId,
             'correctChoiceId' => $correctChoiceId,
             'currentDayNumber' => $currentDayNumber,
+            'isAttemptActive' => $isAttemptActive,
         ]);
     }
 

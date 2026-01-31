@@ -5,14 +5,34 @@
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="text('auth.register.name', 'Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-text-input
+                id="name"
+                class="block mt-1 w-full text-left"
+                type="text"
+                name="name"
+                :value="old('name')"
+                required
+                autofocus
+                autocomplete="name"
+                dir="ltr"
+            />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="text('auth.register.email', 'Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-text-input
+                id="email"
+                class="block mt-1 w-full text-left"
+                type="email"
+                name="email"
+                :value="old('email')"
+                required
+                autocomplete="username"
+                inputmode="email"
+                dir="ltr"
+            />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -20,10 +40,15 @@
         <div class="mt-4">
             <x-input-label for="password" :value="text('auth.register.password', 'Password')" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+            <x-text-input
+                id="password"
+                class="block mt-1 w-full text-left"
+                type="password"
+                name="password"
+                required
+                autocomplete="new-password"
+                dir="ltr"
+            />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
@@ -32,9 +57,15 @@
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="text('auth.register.confirm', 'Confirm Password')" />
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+            <x-text-input
+                id="password_confirmation"
+                class="block mt-1 w-full text-left"
+                type="password"
+                name="password_confirmation"
+                required
+                autocomplete="new-password"
+                dir="ltr"
+            />
 
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>

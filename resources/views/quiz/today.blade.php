@@ -47,97 +47,97 @@
                 </div>
             @endif
 
-            @if (!($attempt && $attempt->status === 'in_progress'))
-                {{-- Hide progress + score while an attempt is actively in progress. --}}
-                <section class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-                    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-                        <div class="flex flex-wrap items-start justify-between gap-4">
-                            <div>
-                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">{{ text('quiz.today.progress.overline', 'Quiz Progress') }}</p>
-                                <h2 class="mt-2 text-lg font-semibold text-gray-900">
-                                    {{ $selectedQuizRange?->title ?? $quizDay->quizRange?->title ?? text('quiz.today.progress.fallback', 'Ramazan Quiz') }}
-                                </h2>
-                                <p class="mt-2 text-sm text-gray-600">
-                                    @if ($currentDayNumber)
-                                        {{ str_replace([':current', ':total'], [$currentDayNumber, $totalDays], text('quiz.today.progress.day_of', 'Day :current of :total')) }}
-                                    @else
-                                        {{ str_replace(':total', $totalDays, text('quiz.today.progress.total_days', ':total days in this quiz range')) }}
-                                    @endif
-                                </p>
-                            </div>
-                            <div class="rounded-xl bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700">
-                                {{ str_replace(':total', $totalDays, text('quiz.today.progress.total_label', 'Total Days: :total')) }}
-                            </div>
-                        </div>
-
-                        <div class="mt-5 flex items-center gap-3 overflow-x-auto">
-                            @forelse ($daysProgress as $day)
-                                @php
-                                    $statusClass = match ($day['status']) {
-                                        'correct' => 'bg-emerald-500 text-white',
-                                        'wrong' => 'bg-rose-500 text-white',
-                                        'missed' => 'bg-amber-400 text-white',
-                                        'today' => 'bg-emerald-100 text-emerald-700',
-                                        default => 'bg-gray-100 text-gray-400',
-                                    };
-                                    $ringClass = $day['is_today'] ? 'ring-2 ring-emerald-500 ring-offset-2' : '';
-                                @endphp
-                                <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full text-xs font-semibold {{ $statusClass }} {{ $ringClass }}">
-                                    {{ $day['label'] }}
-                                </div>
-                            @empty
-                                <p class="text-sm text-gray-600">{{ text('quiz.today.progress.none', 'No quiz days available.') }}</p>
-                            @endforelse
-                        </div>
-
-                        <div class="mt-4 flex flex-wrap gap-4 text-xs text-gray-600">
-                            <span class="flex items-center gap-2">
-                                <span class="h-2 w-2 rounded-full bg-emerald-500"></span> {{ text('quiz.today.progress.correct', '✓ Correct') }}
-                            </span>
-                            <span class="flex items-center gap-2">
-                                <span class="h-2 w-2 rounded-full bg-rose-500"></span> {{ text('quiz.today.progress.wrong', '✕ Wrong') }}
-                            </span>
-                            <span class="flex items-center gap-2">
-                                <span class="h-2 w-2 rounded-full bg-amber-400"></span> {{ text('quiz.today.progress.missed', '⏳ Missed') }}
-                            </span>
-                            <span class="flex items-center gap-2">
-                                <span class="h-2 w-2 rounded-full bg-gray-200"></span> {{ text('quiz.today.progress.remaining', '○ Remaining') }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">{{ text('quiz.today.score.title', 'Score Summary') }}</p>
-                        <div class="mt-4">
-                            <p class="text-3xl font-semibold text-gray-900">{{ $currentScore }}</p>
-                            <p class="mt-1 text-sm text-gray-600">
-                                {{ text('quiz.today.score.current', 'Current Score') }}
-                                @if ($maxPossibleScore)
-                                    <span class="text-gray-400">/ {{ $maxPossibleScore }}</span>
+            <section
+                data-progress-score
+                class="{{ $isAttemptActive ? 'hidden' : '' }} grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]"
+            >
+                <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                    <div class="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">{{ text('quiz.today.progress.overline', 'Quiz Progress') }}</p>
+                            <h2 class="mt-2 text-lg font-semibold text-gray-900">
+                                {{ $selectedQuizRange?->title ?? $quizDay->quizRange?->title ?? text('quiz.today.progress.fallback', 'Ramazan Quiz') }}
+                            </h2>
+                            <p class="mt-2 text-sm text-gray-600">
+                                @if ($currentDayNumber)
+                                    {{ str_replace([':current', ':total'], [$currentDayNumber, $totalDays], text('quiz.today.progress.day_of', 'Day :current of :total')) }}
+                                @else
+                                    {{ str_replace(':total', $totalDays, text('quiz.today.progress.total_days', ':total days in this quiz range')) }}
                                 @endif
                             </p>
                         </div>
-                        <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
-                            <div class="rounded-xl bg-emerald-50 px-3 py-3 text-emerald-800">
-                                <p class="text-xs uppercase tracking-wide text-emerald-600">{{ text('quiz.today.score.correct', 'Correct') }}</p>
-                                <p class="mt-1 text-lg font-semibold">{{ $answeredCorrectCount }}</p>
-                            </div>
-                            <div class="rounded-xl bg-rose-50 px-3 py-3 text-rose-700">
-                                <p class="text-xs uppercase tracking-wide text-rose-500">{{ text('quiz.today.score.wrong', 'Wrong') }}</p>
-                                <p class="mt-1 text-lg font-semibold">{{ $answeredWrongCount }}</p>
-                            </div>
-                            <div class="rounded-xl bg-amber-50 px-3 py-3 text-amber-700">
-                                <p class="text-xs uppercase tracking-wide text-amber-600">{{ text('quiz.today.score.missed', 'Missed') }}</p>
-                                <p class="mt-1 text-lg font-semibold">{{ $missedCount }}</p>
-                            </div>
-                            <div class="rounded-xl bg-gray-50 px-3 py-3 text-gray-700">
-                                <p class="text-xs uppercase tracking-wide text-gray-500">{{ text('quiz.today.score.remaining', 'Remaining') }}</p>
-                                <p class="mt-1 text-lg font-semibold">{{ $remainingCount }}</p>
-                            </div>
+                        <div class="rounded-xl bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700">
+                            {{ str_replace(':total', $totalDays, text('quiz.today.progress.total_label', 'Total Days: :total')) }}
                         </div>
                     </div>
-                </section>
-            @endif
+
+                    <div class="mt-5 flex items-center gap-3 overflow-x-auto">
+                        @forelse ($daysProgress as $day)
+                            @php
+                                $statusClass = match ($day['status']) {
+                                    'correct' => 'bg-emerald-500 text-white',
+                                    'wrong' => 'bg-rose-500 text-white',
+                                    'missed' => 'bg-amber-400 text-white',
+                                    'today' => 'bg-emerald-100 text-emerald-700',
+                                    default => 'bg-gray-100 text-gray-400',
+                                };
+                                $ringClass = $day['is_today'] ? 'ring-2 ring-emerald-500 ring-offset-2' : '';
+                            @endphp
+                            <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full text-xs font-semibold {{ $statusClass }} {{ $ringClass }}">
+                                {{ $day['label'] }}
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-600">{{ text('quiz.today.progress.none', 'No quiz days available.') }}</p>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap gap-4 text-xs text-gray-600">
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-emerald-500"></span> {{ text('quiz.today.progress.correct', '✓ Correct') }}
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-rose-500"></span> {{ text('quiz.today.progress.wrong', '✕ Wrong') }}
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-amber-400"></span> {{ text('quiz.today.progress.missed', '⏳ Missed') }}
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-gray-200"></span> {{ text('quiz.today.progress.remaining', '○ Remaining') }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">{{ text('quiz.today.score.title', 'Score Summary') }}</p>
+                    <div class="mt-4">
+                        <p class="text-3xl font-semibold text-gray-900">{{ $currentScore }}</p>
+                        <p class="mt-1 text-sm text-gray-600">
+                            {{ text('quiz.today.score.current', 'Current Score') }}
+                            @if ($maxPossibleScore)
+                                <span class="text-gray-400">/ {{ $maxPossibleScore }}</span>
+                            @endif
+                        </p>
+                    </div>
+                    <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+                        <div class="rounded-xl bg-emerald-50 px-3 py-3 text-emerald-800">
+                            <p class="text-xs uppercase tracking-wide text-emerald-600">{{ text('quiz.today.score.correct', 'Correct') }}</p>
+                            <p class="mt-1 text-lg font-semibold">{{ $answeredCorrectCount }}</p>
+                        </div>
+                        <div class="rounded-xl bg-rose-50 px-3 py-3 text-rose-700">
+                            <p class="text-xs uppercase tracking-wide text-rose-500">{{ text('quiz.today.score.wrong', 'Wrong') }}</p>
+                            <p class="mt-1 text-lg font-semibold">{{ $answeredWrongCount }}</p>
+                        </div>
+                        <div class="rounded-xl bg-amber-50 px-3 py-3 text-amber-700">
+                            <p class="text-xs uppercase tracking-wide text-amber-600">{{ text('quiz.today.score.missed', 'Missed') }}</p>
+                            <p class="mt-1 text-lg font-semibold">{{ $missedCount }}</p>
+                        </div>
+                        <div class="rounded-xl bg-gray-50 px-3 py-3 text-gray-700">
+                            <p class="text-xs uppercase tracking-wide text-gray-500">{{ text('quiz.today.score.remaining', 'Remaining') }}</p>
+                            <p class="mt-1 text-lg font-semibold">{{ $remainingCount }}</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <section class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                 <div class="flex flex-wrap items-start justify-between gap-4">
@@ -288,6 +288,11 @@
                                 if (quizPage) {
                                     quizPage.classList.add('pointer-events-none', 'select-none');
                                     quizPage.setAttribute('aria-hidden', 'true');
+                                }
+
+                                const progressScore = document.querySelector('[data-progress-score]');
+                                if (progressScore) {
+                                    progressScore.classList.remove('hidden');
                                 }
 
                                 if (redirectCountdown) {
