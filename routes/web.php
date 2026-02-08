@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\AdminChoiceController;
 use App\Http\Controllers\Admin\AppTextController;
 use App\Http\Controllers\Admin\FontController;
 use App\Http\Controllers\Admin\ThemeSettingsController;
+use App\Http\Controllers\Admin\AdController;
+use App\Http\Controllers\Admin\AdSlotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,6 +135,32 @@ Route::middleware(['auth', 'admin'])
 
         Route::put('/theme', [ThemeSettingsController::class, 'update'])
             ->name('theme.update');
+
+        // Ads management
+        Route::get('/ads', [AdController::class, 'index'])
+            ->name('ads.index');
+
+        Route::get('/ads/create', [AdController::class, 'create'])
+            ->name('ads.create');
+
+        Route::post('/ads', [AdController::class, 'store'])
+            ->name('ads.store');
+
+        Route::get('/ads/{ad}/edit', [AdController::class, 'edit'])
+            ->name('ads.edit');
+
+        Route::put('/ads/{ad}', [AdController::class, 'update'])
+            ->name('ads.update');
+
+        Route::delete('/ads/{ad}', [AdController::class, 'destroy'])
+            ->name('ads.destroy');
+
+        // Ad slots
+        Route::get('/ad-slots/home-top', [AdSlotController::class, 'editHomeTop'])
+            ->name('ad-slots.home-top.edit');
+
+        Route::put('/ad-slots/home-top', [AdSlotController::class, 'updateHomeTop'])
+            ->name('ad-slots.home-top.update');
     });
 
 /*

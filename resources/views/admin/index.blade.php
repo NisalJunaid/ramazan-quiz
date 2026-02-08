@@ -45,6 +45,24 @@
                 </a>
             </div>
 
+            <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">{{ text('admin.dashboard.ads.title', 'Manage Ads') }}</h2>
+                <p class="mt-2 text-sm text-gray-600">{{ text('admin.dashboard.ads.subtitle', 'Upload ad creative, set schedules, and manage activation status.') }}</p>
+                <a class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('admin.ads.index') }}">
+                    {{ text('admin.dashboard.ads.link', 'Open Ad Manager') }}
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+
+            <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">{{ text('admin.dashboard.ad_slots.title', 'Homepage Ad Slot') }}</h2>
+                <p class="mt-2 text-sm text-gray-600">{{ text('admin.dashboard.ad_slots.subtitle', 'Choose which ads appear above the homepage hero card.') }}</p>
+                <a class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('admin.ad-slots.home-top.edit') }}">
+                    {{ text('admin.dashboard.ad_slots.link', 'Configure Slot') }}
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+
             <div class="rounded-2xl border border-dashed border-gray-300 bg-white p-6">
                 <h2 class="text-lg font-semibold text-gray-900">{{ text('admin.dashboard.tips.title', 'Quick Tips') }}</h2>
                 <ul class="mt-3 space-y-2 text-sm text-gray-600">
