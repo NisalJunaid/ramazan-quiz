@@ -17,6 +17,7 @@ class AppTextController extends Controller
     public function index(Request $request): View
     {
         $search = $request->string('search')->toString();
+        $activeLocale = app()->getLocale();
 
         $texts = AppText::query()
             ->with('font')
@@ -41,11 +42,18 @@ class AppTextController extends Controller
                 });
             });
 
+        $overrideLookup = AppText::query()
+            ->where('locale', $activeLocale)
+            ->get()
+            ->keyBy('key');
+
         return view('admin.texts.index', [
             'groupedTexts' => $groupedTexts,
             'search' => $search,
             'settings' => Setting::current(),
             'fonts' => Font::query()->orderBy('name')->get(),
+            'activeLocale' => $activeLocale,
+            'overrideLookup' => $overrideLookup,
         ]);
     }
 
@@ -106,13 +114,21 @@ class AppTextController extends Controller
             'texts.*.font_size' => ['nullable', 'string', 'max:32'],
             'texts.*.text_color' => ['nullable', 'string', 'max:16'],
             'texts.*.text_color_clear' => ['nullable', 'boolean'],
+            'apply_to_active_locale' => ['nullable', 'boolean'],
         ]);
 
+        $activeLocale = app()->getLocale();
+        $applyToActiveLocale = $request->boolean('apply_to_active_locale');
         $submittedTexts = $validated['texts'];
         $texts = AppText::query()
             ->whereIn('id', array_map('intval', array_keys($submittedTexts)))
             ->get()
             ->keyBy('id');
+        $updatedDefaults = [];
+        $overrideLookup = AppText::query()
+            ->where('locale', $activeLocale)
+            ->get()
+            ->keyBy('key');
 
         foreach ($submittedTexts as $textId => $payload) {
             $text = $texts->get((int) $textId);
@@ -151,7 +167,38 @@ class AppTextController extends Controller
                 'text_color' => $textColor,
             ]);
 
-            $this->forgetCache($text->key, $text->locale);
+            if ($text->locale === null) {
+                $updatedDefaults[$text->key] = [
+                    'value' => $value,
+                    'font_id' => $fontId,
+                    'font_size' => $fontSize,
+                    'text_color' => $textColor,
+                ];
+            }
+
+            $this->forgetCacheForKeyAllRelevantLocales($text->key, [$activeLocale, $text->locale]);
+        }
+
+        if ($applyToActiveLocale && $updatedDefaults !== []) {
+            foreach ($updatedDefaults as $key => $payload) {
+                $overrideText = $overrideLookup->get($key);
+
+                if (! $overrideText) {
+                    continue;
+                }
+
+                if (
+                    $payload['value'] === $overrideText->value
+                    && $payload['font_id'] === $overrideText->font_id
+                    && $payload['font_size'] === $overrideText->font_size
+                    && $payload['text_color'] === $overrideText->text_color
+                ) {
+                    continue;
+                }
+
+                $overrideText->update($payload);
+                $this->forgetCacheForKeyAllRelevantLocales($key, [$activeLocale, $overrideText->locale]);
+            }
         }
 
         return redirect()
@@ -189,6 +236,15 @@ class AppTextController extends Controller
         }
 
         Cache::forget("app_texts.default.{$key}");
+    }
+
+    private function forgetCacheForKeyAllRelevantLocales(string $key, array $locales): void
+    {
+        Cache::forget("app_texts.default.{$key}");
+
+        foreach (array_unique(array_filter($locales)) as $locale) {
+            Cache::forget("app_texts.{$locale}.{$key}");
+        }
     }
 
     private function groupLabelForKey(string $key): string

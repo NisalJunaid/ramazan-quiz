@@ -5,6 +5,11 @@
 @endphp
 
 @section('content')
+    <style>
+        tr[id^='text-row-']:target {
+            background-color: #fef3c7;
+        }
+    </style>
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 sm:px-6 lg:px-8">
         <header class="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -24,6 +29,16 @@
                 {{ session('status') }}
             </div>
         @endif
+
+        <div class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+            <p class="font-semibold">
+                {{ text('admin.texts.active_locale', 'Active locale') }}:
+                <span class="text-gray-900">{{ $activeLocale }}</span>
+            </p>
+            <p class="mt-1 text-xs text-amber-700">
+                {{ text('admin.texts.active_locale_hint', 'Texts use locale overrides first. If a locale row exists, Default won’t be shown for that locale.') }}
+            </p>
+        </div>
 
         <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
             <h2 class="text-lg font-semibold text-gray-900">{{ text('admin.texts.rtl.heading', 'RTL Layout Setting') }}</h2>
@@ -120,7 +135,16 @@
                 onsubmit="const button = this.querySelector('[data-save-all]'); if (button) { button.disabled = true; button.classList.add('opacity-70','cursor-not-allowed'); button.querySelector('[data-label]').classList.add('hidden'); button.querySelector('[data-loading]').classList.remove('hidden'); }"
             >
                 @csrf
-                <div class="sticky top-4 z-20 flex justify-end">
+                <div class="sticky top-4 z-20 flex flex-wrap items-center justify-between gap-3">
+                    <label class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        <input
+                            class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                            type="checkbox"
+                            name="apply_to_active_locale"
+                            value="1"
+                        >
+                        {{ text('admin.texts.bulk.apply_active_locale', 'Apply changes to active locale overrides when present') }}
+                    </label>
                     <button
                         class="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
                         data-save-all
@@ -170,12 +194,22 @@
                                     </thead>
                                     <tbody class="divide-y divide-gray-100">
                                         @foreach ($groupTexts as $text)
-                                            <tr class="bg-white">
+                                            @php
+                                                $activeOverride = $text->locale ? null : $overrideLookup->get($text->key);
+                                            @endphp
+                                            <tr id="text-row-{{ $text->id }}" class="bg-white scroll-mt-24">
                                                 <td class="px-4 py-3 font-semibold text-gray-900">
                                                     {{ $text->key }}
                                                 </td>
                                                 <td class="px-4 py-3 text-gray-600">
-                                                    {{ $text->locale ?? text('admin.texts.table.default', 'Default') }}
+                                                    <div class="flex flex-col gap-1">
+                                                        <span>{{ $text->locale ?? text('admin.texts.table.default', 'Default') }}</span>
+                                                        @if ($activeOverride)
+                                                            <span class="inline-flex w-fit items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                                                                {{ text('admin.texts.table.override_badge', 'Overridden in') }} {{ $activeLocale }}
+                                                            </span>
+                                                        @endif
+                                                    </div>
                                                 </td>
                                                 <td class="px-4 py-3">
                                                     <input
@@ -184,6 +218,24 @@
                                                         name="texts[{{ $text->id }}][value]"
                                                         value="{{ $text->value }}"
                                                     >
+                                                    @if ($activeOverride)
+                                                        <div class="mt-2 rounded-xl border border-amber-100 bg-amber-50 p-2 text-xs text-amber-700">
+                                                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                                                <span class="font-semibold">
+                                                                    {{ text('admin.texts.table.override_preview', 'Active locale preview') }}
+                                                                </span>
+                                                                <a class="text-xs font-semibold text-emerald-700 hover:text-emerald-800" href="#text-row-{{ $activeOverride->id }}">
+                                                                    {{ text('admin.texts.table.override_edit', 'Edit') }} {{ $activeLocale }} {{ text('admin.texts.table.override_suffix', 'override') }}
+                                                                </a>
+                                                            </div>
+                                                            <input
+                                                                class="mt-2 w-full rounded-lg border border-amber-200 bg-white px-2 py-1 text-xs text-gray-700"
+                                                                type="text"
+                                                                value="{{ $activeOverride->value }}"
+                                                                readonly
+                                                            >
+                                                        </div>
+                                                    @endif
                                                 </td>
                                                 <td class="px-4 py-3">
                                                     <div class="flex flex-wrap items-center gap-2">
