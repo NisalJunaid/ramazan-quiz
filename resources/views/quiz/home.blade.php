@@ -26,6 +26,18 @@
             $offsetUnit = is_null($offsetUnit) ? 'px' : $offsetUnit;
         @endphp
 
+        @if ($homeTopAd)
+            <section class="card overflow-hidden p-0 shadow-sm">
+                @if (!empty($homeTopAd['url']))
+                    <a class="block" href="{{ $homeTopAd['url'] }}" target="_blank" rel="noopener">
+                        <img class="h-auto w-full" src="{{ $homeTopAd['image_url'] }}" alt="{{ $homeTopAd['alt'] }}">
+                    </a>
+                @else
+                    <img class="h-auto w-full" src="{{ $homeTopAd['image_url'] }}" alt="{{ $homeTopAd['alt'] }}">
+                @endif
+            </section>
+        @endif
+
         {{-- Hero content offset controlled via theme settings. --}}
         <section class="card relative overflow-hidden p-8 shadow-sm" style="--hero-content-offset: {{ $offsetValue }}{{ $offsetUnit }};">
             @if ($heroBackgroundUrl)
